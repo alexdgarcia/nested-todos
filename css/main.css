@@ -1,0 +1,84 @@
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+main {
+	width: 700px;
+	margin: 20px auto;
+
+	display: flex;
+	flex-direction: column;
+	border: 1px solid black;
+}
+
+ul {
+	/* Bullets will spill outside container by default, so we use this property to keep bullets inside the div. */
+	list-style-position: inside;
+}
+
+/* CSS Combinators: 
+ * Descendant Selector; div p {}
+ *     The descendant selector matches all elements that are descendants of a specified element.
+ *     The above example selects all <p> elements inside <div> elements.
+ * Child Selector; div > p
+ *     The child selector selects all elements that are the immediate children of a specified element.
+ *     The above example selects all <p> elements that are immediate children of a <div> element.
+ * Adjacent Sibling Selector; div + p
+ *     The adjacent sibling selector selects all elements that are the adjacent siblings of a specified element.
+ *     Sibling elements must have the same parent element, and "adjacent" means "immediately following".
+ *     The above example selects all <p> elements that are placed immediately after <div> elements.
+ * General Sibling Select; div ~ p
+ *     The general sibling selector selects all elements that are siblings of a specified element.
+ *     The above example selects all <p> elements that are siblings of <div> elements.
+ */
+li > ul {
+	margin-left: 40px;
+}
+
+ul li {
+	position: relative;
+	margin: 0px 5px 5px 0px;
+}
+
+div {
+	height: 25px;
+	width: 300px;
+	display: inline-block;
+}
+
+input {
+	position: absolute;
+	height: 100%;
+	width: 99%;
+	top: 0;
+	left: 10px;
+
+	/*
+     * `visibility: hidden` allows you to hide an element while still respecting
+     * its dimensions. It is like making the element invisible, but it still
+     * takes up the space it would have taken otherwise.
+     * `display: none` differs because it will be as if the element does not exist
+     * at all. Its inherent dimensions will not be factored in the layout; element
+     * is completely removed from the DOM.
+	*/
+	visibility: hidden;
+}
+
+input:focus {
+	outline: none;
+}
+
+.last {
+	top: 10px;
+}
+
+.show {
+	visibility: visible;
+}
+
+.completed {
+	text-decoration: line-through;
+	color: grey;
+}
