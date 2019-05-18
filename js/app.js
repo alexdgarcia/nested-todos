@@ -255,13 +255,13 @@ var App = {
 			var parentIndex = this.getTodoIndex(this.todos, futureParent.id);
 			parentArray[parentIndex].nestedTodos.push(todoArray[todoIndex]);
 			todoArray.splice(todoIndex, 1);
-			this.shallowRender();
+			this.shallowRender(currentLI.id);
 		} else if (futureParent.nodeName === 'MAIN') {
 			var currentParent = currentLI.parentElement.parentElement;
 			var parentIndex = this.getTodoIndex(this.todos, currentParent.id);
 			this.todos.splice(parentIndex + 1, 0, todoArray[todoIndex]);
 			todoArray.splice(todoIndex, 1);
-			this.shallowRender(currentLI);
+			this.shallowRender(currentLI.id);
 		}
 	},
 	completeTodo: function(e) {
