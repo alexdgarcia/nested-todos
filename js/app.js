@@ -93,8 +93,6 @@ var App = {
 				focusChild.focus();
 			}
 		}
-
-		console.log(this.todos);
 	},
 	getLastDivElement: function(ancestorEl) {
 		var descendentEl = ancestorEl.lastElementChild;
@@ -126,6 +124,7 @@ var App = {
 		 	 * given event occurs.
 		 	 */
 			if (e.shiftKey) {
+				debugger;
 				this.unnestTodo(e);
 			} else {
 				this.nestTodo(e);
@@ -148,14 +147,10 @@ var App = {
 		} 
 	},
 	editTodo: function(e) {
-		if (e.target.nodeName === 'DIV') {
-			var inputFieldEl = e.target.nextElementSibling;
-			inputFieldEl.value = e.target.textContent.trim();
-			inputFieldEl.classList.add('show');
-			inputFieldEl.focus();
-		} else {
-			console.log(e.target.parentElement);
-		}
+		var inputFieldEl = e.target.nextElementSibling;
+		inputFieldEl.value = e.target.textContent.trim();
+		inputFieldEl.classList.add('show');
+		inputFieldEl.focus();
 	},
 	editKeyUp: function(e) {
 		var ENTER_KEY = 13;
@@ -251,9 +246,11 @@ var App = {
 		var futureParent = currentLI.parentElement.parentElement.parentElement.parentElement;
 
 		if (futureParent.nodeName === 'LI') {
+			var previousParent = currentLI.parentElement.parentElement;
+			var previousParentIndex = this.getTodoIndex(this.todos, previousParent.id);
 			var parentArray = this.getArray(this.todos, futureParent.id);
 			var parentIndex = this.getTodoIndex(this.todos, futureParent.id);
-			parentArray[parentIndex].nestedTodos.push(todoArray[todoIndex]);
+			parentArray[parentIndex].nestedTodos.splice(previousParentIndex + 1, 0, todoArray[todoIndex]);
 			todoArray.splice(todoIndex, 1);
 			this.shallowRender(currentLI.id);
 		} else if (futureParent.nodeName === 'MAIN') {
@@ -263,6 +260,9 @@ var App = {
 			todoArray.splice(todoIndex, 1);
 			this.shallowRender(currentLI.id);
 		}
+
+		// If an element's futureParent === html, the element is already on the outermost ul,
+		// the above conditionals will not execute, and this function will return undefined.
 	},
 	completeTodo: function(e) {
 		var currentDiv = e.target.parentElement;
