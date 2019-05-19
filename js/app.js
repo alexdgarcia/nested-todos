@@ -88,7 +88,7 @@ var App = {
 			if (arguments.length > 0) {
 				var focusParent = document.getElementById(elementToFocusID);
 				var focusChild = focusParent.children[1];
-				focusChild.value = focusParent.textContent.trim();
+				focusChild.value = focusParent.firstElementChild.textContent.trim();
 				focusChild.classList.add('show');
 				focusChild.focus();
 			}
@@ -128,7 +128,7 @@ var App = {
 			} else {
 				this.nestTodo(e);
 			}
-		} else if (e.target.nodeName === 'INPUT' && e.type === 'keyup') {
+		} else if (e.target.nodeName === 'INPUT' && e.type === 'keyup' && !e.ctrlKey) {
 			this.editKeyUp(e);
 		} else if (e.target.nodeName === 'INPUT' && e.type === 'focusout') {
 			this.unfocus(e);
