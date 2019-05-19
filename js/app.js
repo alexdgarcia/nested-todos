@@ -87,7 +87,7 @@ var App = {
 
 			if (arguments.length > 0) {
 				var focusParent = document.getElementById(elementToFocusID);
-				var focusChild = focusParent.lastElementChild;
+				var focusChild = focusParent.children[1];
 				focusChild.value = focusParent.textContent.trim();
 				focusChild.classList.add('show');
 				focusChild.focus();
@@ -124,7 +124,6 @@ var App = {
 		 	 * given event occurs.
 		 	 */
 			if (e.shiftKey) {
-				debugger;
 				this.unnestTodo(e);
 			} else {
 				this.nestTodo(e);
@@ -133,7 +132,8 @@ var App = {
 			this.editKeyUp(e);
 		} else if (e.target.nodeName === 'INPUT' && e.type === 'focusout') {
 			this.unfocus(e);
-		} else if (e.target.nodeName === 'INPUT' && e.type === 'keyup' && e.which === 13 && e.ctrlKey) {
+		} else if (e.target.nodeName === 'INPUT' && e.type === 'keydown' && e.which === 13 && e.ctrlKey) {
+			e.preventDefault();
 			this.completeTodo(e);
 		} else if (e.target.nodeName === 'INPUT' && e.target.value === '' /*&& e.type === 'keydown'*/ && e.which === 8) {
 			var divID = e.target.parentElement.id;
@@ -141,7 +141,6 @@ var App = {
 				//debugger; /* look into these two debuggers and the behavior here when a todo is destroyed and when it is cleared */
 				this.destroyTodo(e);
 			} else if (!divID && e.type === 'keyup') {
-				//debugger;
 				this.clearEmptyTodo();
 			}
 		} 
@@ -270,7 +269,7 @@ var App = {
 		var todoIndex = this.getTodoIndex(this.todos, currentDiv.id);
 		var todoStatus = todoArray[todoIndex].completed;
 		todoArray[todoIndex].completed = !todoStatus;
-		this.render();
+		this.shallowRender(currentDiv.id);
 	},
 	getArray: function(todos, id) {
 		var array;

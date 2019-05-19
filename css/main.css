@@ -79,6 +79,13 @@ input:focus {
 }
 
 .completed {
-	text-decoration: line-through;
 	color: grey;
+}
+
+.completed input {
+	color: grey;
+}
+
+.completed > div, .completed > input {
+	text-decoration: line-through;
 }
