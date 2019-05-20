@@ -209,15 +209,25 @@ var App = {
 		}
 	},
 	destroyTodo: function(e) {
-		var divID = e.target.parentElement.id;
-		var todoArray = this.getArray(this.todos, divID);
-		var todoIndex = this.getTodoIndex(this.todos, divID);
+		var div = e.target.parentElement;
+		var todoArray = this.getArray(this.todos, div.id);
+		var todoIndex = this.getTodoIndex(this.todos, div.id);
 
 		if (todoArray[todoIndex].nestedTodos.length > 0) {
 			return;
 		} else {
 			todoArray.splice(todoIndex, 1);
-			this.shallowRender();
+			
+			// ternary operators here maybe??
+			if (div.previousElementSibling !== null) {
+				this.shallowRender(div.previousElementSibling.id);
+			} else if (div.parentElement.parentElement.nodeName !== 'MAIN') {
+				this.shallowRender(div.parentElement.parentElement.id);
+			} else if (div.nextElementSibling !== null) {
+				this.shallowRender(div.nextElementSibling.id);
+			} else {
+				this.shallowRender();
+			}
 		}
 	},
 	unfocus(e) {
