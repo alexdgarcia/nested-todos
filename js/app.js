@@ -39,34 +39,6 @@ var App = {
 		this.shallowRender();
 		this.createEventListeners();
 	},
-	// render: function() {
-	// 	// 5. Select the element you want to insert Handlebars code into:
-	// 	var todoList = document.querySelector('#todo-list');
-
-	// 	if (!this.todos.length) {
-	// 		this.createTodo(this.todos, '');
-	// 	} 
-	// 	// 6. Set the innerHTML of your element equal to the result of calling the compiled
-	// 	// Handlebars function with a given context (this.todos). This will return a string
-	// 	// that can be stored in todoList.innerHTML. innerHTML is always a string itself:
-	// 	todoList.innerHTML = this.todoTemplateMain({todos: this.todos});
-	// 	var lastElementInput = this.getLastDivElement(todoList).children[1];
-	// 	lastElementInput.classList.add('show');
-	// 	lastElementInput.classList.add('last');
-	// 	lastElementInput.focus();
-	// },
-	// renderHelper: function() {
-	// 	var temporaryDOM = document.createElement('UL');
-	// 	temporaryDOM.innerHTML = this.todoTemplateMain({todos: this.todos});
-	// 	var arr = this.getArray(this.todos, this.getLastDivElement(temporaryDOM).id);
-
-	// 	arr.push({
-	// 			id: util.uuid(),
-	// 			text: '',
-	// 			completed: false,
-	// 			nestedTodos: []
-	// 	});
-	// },
 	shallowRender: function(elementToFocusID) {
 		var todoList = document.querySelector('#todo-list');
 		
