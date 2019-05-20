@@ -107,15 +107,10 @@ var App = {
 		} else if (e.target.nodeName === 'INPUT' && e.type === 'keydown' && e.which === 13 && e.ctrlKey) {
 			e.preventDefault();
 			this.completeTodo(e);
-		} else if (e.target.nodeName === 'INPUT' && e.target.value === '' /*&& e.type === 'keydown'*/ && e.which === 8) {
-			var divID = e.target.parentElement.id;
-			if (divID && e.type === 'keydown') {
-				//debugger; /* look into these two debuggers and the behavior here when a todo is destroyed and when it is cleared */
-				this.destroyTodo(e);
-			} else if (!divID && e.type === 'keyup') {
-				this.clearEmptyTodo();
-			}
-		} 
+		} else if (e.target.nodeName === 'INPUT' && e.target.value === '' && e.type === 'keydown' && e.which === 8) {
+			e.preventDefault();
+			this.destroyTodo(e);
+		}
 	},
 	editTodo: function(e) {
 		var inputFieldEl = e.target.nextElementSibling;
