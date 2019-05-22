@@ -111,10 +111,13 @@ var App = {
 		} else if (e.target.nodeName === 'INPUT' && e.target.value === '' && e.type === 'keydown' && e.which === 8) {
 			e.preventDefault();
 			this.destroyTodo(e);
-		} else if ((e.target.nodeName === 'INPUT' || e.target.nodeName === 'TEXTAREA') 
+		} else if ((e.target.nodeName === 'INPUT' || e.target.classList[0] === 'notes') 
 				    && e.type === 'keydown' && e.which === 13 && e.shiftKey) {
 			e.preventDefault();
 			this.toggleNotes(e);
+		} else if (e.target.classList[0] === 'notes' && e.type === 'keydown' && e.which === 13) {
+			e.preventDefault();
+			this.editNotes();
 		}
 	},
 	editTodo: function(e) {
@@ -255,13 +258,14 @@ var App = {
 		this.shallowRender(currentDiv.id);
 	},
 	toggleNotes: function(e) {
+		//debugger;
 		if (e.target.nodeName === 'INPUT') {
 			e.target.blur();
 			var notesDiv = e.target.previousElementSibling;
-			notesDiv.lastElementChild.classList.add('show-notes');
-			notesDiv.lastElementChild.focus();
+			notesDiv.classList.add('show-notes');
+			notesDiv.focus();
 		} else {
-			var parentDiv = e.target.parentElement.parentElement;
+			var parentDiv = e.target.parentElement;
 			var array = this.getArray(this.todos, parentDiv.id);
 			var index = this.getTodoIndex(this.todos, parentDiv.id);
 			array[index].notes = e.target.value;

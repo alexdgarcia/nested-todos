@@ -99,14 +99,14 @@ div textarea {
 }
 
 .notes {
-	min-height: 0px;
-	height: auto;
-	display: block;
+	max-height: 20px;
+	display: none;
 }
 
 .show-notes {
 	display: block;
-	width: 99%;
+	height: auto;
+	width: 90%;
 	margin-left: 20px;
 	margin-top: 5px;
 }
