@@ -47,19 +47,20 @@ var App = {
 				id: util.uuid(),
 				text: '',
 				completed: false,
+				notes: '',
 				nestedTodos: []
 			});
 
 			todoList.innerHTML = this.todoTemplateMain({todos: this.todos});
 			var lastInput = this.getLastDivElement(todoList);
-			lastInput.children[1].classList.add('show');
-			lastInput.children[1].focus();
+			lastInput.children[2].classList.add('show');
+			lastInput.children[2].focus();
 		} else {
 			todoList.innerHTML = this.todoTemplateMain({todos: this.todos});
 
 			if (arguments.length > 0) {
 				var focusParent = document.getElementById(elementToFocusID);
-				var focusChild = focusParent.children[1];
+				var focusChild = focusParent.children[2];
 				focusChild.value = focusParent.firstElementChild.textContent.trim();
 				focusChild.classList.add('show');
 				focusChild.focus();
@@ -100,7 +101,7 @@ var App = {
 			} else {
 				this.nestTodo(e);
 			}
-		} else if (e.target.nodeName === 'INPUT' && e.type === 'keyup' && !e.ctrlKey) {
+		} else if (e.target.nodeName === 'INPUT' && e.type === 'keyup' && !e.ctrlKey && !e.shiftKey) {
 			this.editKeyUp(e);
 		} else if (e.target.nodeName === 'INPUT' && e.type === 'focusout') {
 			this.unfocus(e);
@@ -110,10 +111,14 @@ var App = {
 		} else if (e.target.nodeName === 'INPUT' && e.target.value === '' && e.type === 'keydown' && e.which === 8) {
 			e.preventDefault();
 			this.destroyTodo(e);
+		} else if (e.target.nodeName === 'INPUT' && e.type === 'keyup' && e.which === 13 && e.shiftKey) {
+			this.toggleNotes(e);
+		} else if (e.target.nodeName === 'TEXTAREA' && e.type === 'keyup' && e.which === 13 && e.shiftKey) {
+			this.unfocusNotes(e);
 		}
 	},
 	editTodo: function(e) {
-		var inputFieldEl = e.target.nextElementSibling;
+		var inputFieldEl = e.target.nextElementSibling.nextElementSibling;
 		inputFieldEl.value = e.target.textContent.trim();
 		inputFieldEl.classList.add('show');
 		inputFieldEl.focus();
@@ -161,6 +166,7 @@ var App = {
 			id: util.uuid(),
 			text: '',
 			completed: false,
+			notes: '',
 			nestedTodos: []
 		};
 
@@ -197,8 +203,8 @@ var App = {
 			}
 		}
 	},
-	unfocus(e) {
-		e.target.previousElementSibling.textContent = e.target.value.trim();
+	unfocus: function(e) {
+		e.target.previousElementSibling.previousElementSibling.textContent = e.target.value.trim();
 		e.target.classList.remove('show');
 	},
 	nestTodo: function(e) {
@@ -237,7 +243,7 @@ var App = {
 			this.shallowRender(currentLI.id);
 		}
 
-		// If an element's futureParent === html, the element is already on the outermost ul,
+		// If an element's futureParent.nodeName === 'html', the element is already on the outermost ul,
 		// the above conditionals will not execute, and this function will return undefined.
 	},
 	completeTodo: function(e) {
@@ -247,6 +253,23 @@ var App = {
 		var todoStatus = todoArray[todoIndex].completed;
 		todoArray[todoIndex].completed = !todoStatus;
 		this.shallowRender(currentDiv.id);
+	},
+	toggleNotes: function(e) {
+		e.target.blur();
+		var notesDiv = e.target.previousElementSibling;
+		notesDiv.lastElementChild.classList.add('show-notes');
+		notesDiv.lastElementChild.focus();
+	},
+	unfocusNotes: function(e) {
+		var parentDiv = e.target.parentElement.parentElement;
+		var array = this.getArray(this.todos, parentDiv.id);
+		var index = this.getTodoIndex(this.todos, parentDiv.id);
+		array[index].notes = e.target.value;
+		console.log(array[index].notes);
+		e.target.blur();
+		parentDiv.children[2].classList.add('show');
+		parentDiv.children[2].focus();
+		//this.shallowRender(parentDiv.id);
 	},
 	getArray: function(todos, id) {
 		var array;

@@ -43,7 +43,8 @@ ul li {
 }
 
 div {
-	height: 25px;
+	min-height: 25px;
+	height: auto;
 	width: 300px;
 	display: inline-block;
 }
@@ -88,4 +89,24 @@ input:focus {
 
 .completed > div, .completed > input {
 	text-decoration: line-through;
+}
+
+div textarea {
+	width: 100%;
+	height: auto;
+	outline: none;
+	display: none;
+}
+
+.notes {
+	min-height: 0px;
+	height: auto;
+	display: block;
+}
+
+.show-notes {
+	display: block;
+	width: 99%;
+	margin-left: 20px;
+	margin-top: 5px;
 }
