@@ -111,10 +111,10 @@ var App = {
 		} else if (e.target.nodeName === 'INPUT' && e.target.value === '' && e.type === 'keydown' && e.which === 8) {
 			e.preventDefault();
 			this.destroyTodo(e);
-		} else if (e.target.nodeName === 'INPUT' && e.type === 'keyup' && e.which === 13 && e.shiftKey) {
+		} else if ((e.target.nodeName === 'INPUT' || e.target.nodeName === 'TEXTAREA') 
+				    && e.type === 'keydown' && e.which === 13 && e.shiftKey) {
+			e.preventDefault();
 			this.toggleNotes(e);
-		} else if (e.target.nodeName === 'TEXTAREA' && e.type === 'keyup' && e.which === 13 && e.shiftKey) {
-			this.unfocusNotes(e);
 		}
 	},
 	editTodo: function(e) {
@@ -255,21 +255,20 @@ var App = {
 		this.shallowRender(currentDiv.id);
 	},
 	toggleNotes: function(e) {
-		e.target.blur();
-		var notesDiv = e.target.previousElementSibling;
-		notesDiv.lastElementChild.classList.add('show-notes');
-		notesDiv.lastElementChild.focus();
-	},
-	unfocusNotes: function(e) {
-		var parentDiv = e.target.parentElement.parentElement;
-		var array = this.getArray(this.todos, parentDiv.id);
-		var index = this.getTodoIndex(this.todos, parentDiv.id);
-		array[index].notes = e.target.value;
-		console.log(array[index].notes);
-		e.target.blur();
-		parentDiv.children[2].classList.add('show');
-		parentDiv.children[2].focus();
-		//this.shallowRender(parentDiv.id);
+		if (e.target.nodeName === 'INPUT') {
+			e.target.blur();
+			var notesDiv = e.target.previousElementSibling;
+			notesDiv.lastElementChild.classList.add('show-notes');
+			notesDiv.lastElementChild.focus();
+		} else {
+			var parentDiv = e.target.parentElement.parentElement;
+			var array = this.getArray(this.todos, parentDiv.id);
+			var index = this.getTodoIndex(this.todos, parentDiv.id);
+			array[index].notes = e.target.value;
+			e.target.blur();
+			parentDiv.children[2].classList.add('show');
+			parentDiv.children[2].focus();
+		}
 	},
 	getArray: function(todos, id) {
 		var array;
