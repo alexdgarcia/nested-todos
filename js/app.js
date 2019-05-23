@@ -115,10 +115,10 @@ var App = {
 				    && e.type === 'keydown' && e.which === 13 && e.shiftKey) {
 			e.preventDefault();
 			this.toggleNotes(e);
-		} else if (e.target.classList[0] === 'notes' && e.type === 'keydown' && e.which === 13) {
-			e.preventDefault();
-			this.editNotes();
-		}
+		}// else if (e.target.classList[0] === 'notes' && e.type === 'keydown' && e.which === 13) {
+		 //	e.preventDefault();
+		 //	this.editNotes();
+		 // }
 	},
 	editTodo: function(e) {
 		var inputFieldEl = e.target.nextElementSibling.nextElementSibling;

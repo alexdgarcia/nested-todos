@@ -104,7 +104,14 @@ div textarea {
 }
 
 .show-notes {
-	display: block;
+	/* 
+	 * display: inline-block will prevent elements with a contenteditable 
+	 * attribute from appending divs (or any other block element) inside 
+	 * that element. It will instead append a <br> element wherever a new
+	 * line is started.
+	 */
+	display: inline-block;
+	outline: none;
 	height: auto;
 	width: 90%;
 	margin-left: 20px;
