@@ -61,7 +61,13 @@ var App = {
 
 			if (arguments.length > 0) {
 				var focusParent = document.getElementById(elementToFocusID);
-				var focusChild = focusParent.children[2];
+				var focusChild;
+
+				if (3 in focusParent.children) {
+					focusParent = focusParent.children[3].lastElementChild;
+				}
+				
+				focusChild = focusParent.children[2];
 				focusChild.value = focusParent.firstElementChild.textContent.trim();
 				focusChild.classList.add('show');
 				focusChild.focus();
@@ -112,14 +118,13 @@ var App = {
 		} else if (e.target.nodeName === 'INPUT' && e.target.value === '' && e.type === 'keydown' && e.which === 8) {
 			e.preventDefault();
 			this.destroyTodo(e);
-		} else if ((e.target.nodeName === 'INPUT' || e.target.classList[0] === 'notes') 
-				    && e.type === 'keydown' && e.which === 13 && e.shiftKey) {
+		} else if (e.target.nodeName === 'INPUT' && e.type === 'keydown' && e.which === 13 && e.shiftKey) {
 			e.preventDefault();
-			this.toggleNotes(e);
-		}// else if (e.target.classList[0] === 'notes' && e.type === 'keydown' && e.which === 13) {
-		 //	e.preventDefault();
-		 //	this.editNotes();
-		 // }
+			this.toggleNotesOn(e);
+		} else if (e.target.classList[0] === 'notes' && e.type === 'keydown' && e.which === 13 && e.shiftKey) {
+			e.preventDefault();
+			this.toggleNotesOff(e);
+		}
 	},
 	editTodo: function(e) {
 		var inputFieldEl = e.target.nextElementSibling.nextElementSibling;
@@ -258,23 +263,23 @@ var App = {
 		todoArray[todoIndex].completed = !todoStatus;
 		this.shallowRender(currentDiv.id);
 	},
-	toggleNotes: function(e) {
+	toggleNotesOn: function(e) {
 		var parentDiv = e.target.parentElement;
 		var array = this.getArray(this.todos, parentDiv.id);
-		var index = this.getTodoIndex(this.todos, parentDiv.id);		
-
-		if (e.target.nodeName === 'INPUT') {
-			e.target.blur();
-			var notesDiv = e.target.previousElementSibling;
-			notesDiv.classList.add('show-notes');
-			notesDiv.innerHTML = array[index].notes;
-			notesDiv.focus();
-		} else {
-			array[index].notes = e.target.innerHTML;
-			e.target.blur();
-			parentDiv.children[2].classList.add('show');
-			parentDiv.children[2].focus();
-		}
+		var index = this.getTodoIndex(this.todos, parentDiv.id);
+		var notesDiv = e.target.previousElementSibling;	
+		e.target.blur();
+		notesDiv.classList.remove('notes-preview');
+		notesDiv.classList.add('show-notes');
+		notesDiv.focus();
+	},
+	toggleNotesOff: function(e) {
+		var parentDiv = e.target.parentElement;
+		var array = this.getArray(this.todos, parentDiv.id);
+		var index = this.getTodoIndex(this.todos, parentDiv.id);
+		array[index].notes = e.target.innerHTML;
+		e.target.blur();
+		this.shallowRender(parentDiv.id);
 	},
 	getArray: function(todos, id) {
 		var array;
