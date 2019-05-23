@@ -42,6 +42,7 @@ var App = {
 	shallowRender: function(elementToFocusID) {
 		var todoList = document.querySelector('#todo-list');
 		
+		// get rid of this todo creation here, you have a createTodo function for exactly this purpose:
 		if (this.todos.length === 0) {
 			this.todos.push({
 				id: util.uuid(),
@@ -164,7 +165,7 @@ var App = {
 		}, this);
 	},
 	createTodo: function(todos, i, parent, nesting) {
-		var indexToAdd = i + 1;
+		var indexToAdd = i + 1; // you don't really need this, you can add i + 1
 		var todo = {
 			id: util.uuid(),
 			text: '',
@@ -258,17 +259,18 @@ var App = {
 		this.shallowRender(currentDiv.id);
 	},
 	toggleNotes: function(e) {
-		//debugger;
+		var parentDiv = e.target.parentElement;
+		var array = this.getArray(this.todos, parentDiv.id);
+		var index = this.getTodoIndex(this.todos, parentDiv.id);		
+
 		if (e.target.nodeName === 'INPUT') {
 			e.target.blur();
 			var notesDiv = e.target.previousElementSibling;
 			notesDiv.classList.add('show-notes');
+			notesDiv.innerHTML = array[index].notes;
 			notesDiv.focus();
 		} else {
-			var parentDiv = e.target.parentElement;
-			var array = this.getArray(this.todos, parentDiv.id);
-			var index = this.getTodoIndex(this.todos, parentDiv.id);
-			array[index].notes = e.target.value;
+			array[index].notes = e.target.innerHTML;
 			e.target.blur();
 			parentDiv.children[2].classList.add('show');
 			parentDiv.children[2].focus();

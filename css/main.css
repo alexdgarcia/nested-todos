@@ -39,10 +39,11 @@ li > ul {
 
 ul li {
 	position: relative;
+	height: auto;
 	margin: 0px 5px 5px 0px;
 }
 
-div {
+.text {
 	min-height: 25px;
 	height: auto;
 	width: 300px;
@@ -91,15 +92,7 @@ input:focus {
 	text-decoration: line-through;
 }
 
-div textarea {
-	width: 100%;
-	height: auto;
-	outline: none;
-	display: none;
-}
-
 .notes {
-	max-height: 20px;
 	display: none;
 }
 
@@ -116,4 +109,13 @@ div textarea {
 	width: 90%;
 	margin-left: 20px;
 	margin-top: 5px;
+}
+
+.notes-preview {
+	display: block;
+	margin-left: 20px;
+	margin-bottom: 5px;
+	overflow: hidden;
+	max-height: 15px;
+	color: grey;
 }

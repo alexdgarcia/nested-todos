@@ -25,9 +25,9 @@
 
 	<script id="handlebars-todo-list-partial" type="text/x-handlebars-template">
 		<li {{#if this.completed}}class="completed"{{/if}} id="{{this.id}}">
-			<div>{{this.text}}</div>
-			<div class="notes" contenteditable="true">
-				{{this.notes}}
+			<div class="text">{{this.text}}</div>
+			<div contenteditable="true"class="notes{{#if this.notes}} notes-preview{{/if}}">
+				{{{this.notes}}}
 			</div>
 			<input type="text">
 			{{!-- You can use the if helper to conditionally render a block. If its argument returns false, undefined, null, "", 0, or [], Handlebars will not render the block. --}}
