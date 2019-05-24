@@ -64,7 +64,7 @@ var App = {
 				var focusChild;
 
 				if (3 in focusParent.children) {
-					focusParent = focusParent.children[3].lastElementChild;
+					focusChild = focusParent.children[3].lastElementChild;
 				}
 				
 				focusChild = focusParent.children[2];
