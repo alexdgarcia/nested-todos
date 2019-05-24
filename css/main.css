@@ -118,4 +118,5 @@ input:focus {
 	overflow: hidden;
 	max-height: 15px;
 	color: grey;
+	outline: none;
 }

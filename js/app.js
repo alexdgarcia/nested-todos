@@ -94,7 +94,7 @@ var App = {
 	},
 	delegateEvents: function(e) {
 		// .hasAttribute is how you determine if an element has an id, as well as other attributes.
-		if (e.target.nodeName === 'DIV' && e.type === 'click' /*&& e.target.hasAttribute("id")*/) {
+		if (e.target.classList[0] === 'text' && e.type === 'click' /*&& e.target.hasAttribute("id")*/) {
 			this.editTodo(e);
 		} else if (e.target.nodeName === 'INPUT' && e.type === 'keydown' && e.which === 9) {
 			e.preventDefault();
@@ -124,6 +124,10 @@ var App = {
 		} else if (e.target.classList[0] === 'notes' && e.type === 'keydown' && e.which === 13 && e.shiftKey) {
 			e.preventDefault();
 			this.toggleNotesOff(e);
+		} else if (e.target.classList[0] === 'notes' && e.type === 'click') {
+			this.toggleNotesOn(e);
+		} else if (e.target.classList[1] === 'show-notes' && e.type === 'focusout') {
+			this.saveNotes(e);
 		}
 	},
 	editTodo: function(e) {
@@ -264,22 +268,35 @@ var App = {
 		this.shallowRender(currentDiv.id);
 	},
 	toggleNotesOn: function(e) {
+		var notesDiv;
+
+		// ternary operator here? blur will still need to be in its own conditional
+		if (e.type === 'keydown') {
+			e.target.blur();
+			notesDiv = e.target.previousElementSibling;	
+		} else {
+			notesDiv = e.target;
+		}
 		var parentDiv = e.target.parentElement;
 		var array = this.getArray(this.todos, parentDiv.id);
 		var index = this.getTodoIndex(this.todos, parentDiv.id);
-		var notesDiv = e.target.previousElementSibling;	
-		e.target.blur();
 		notesDiv.classList.remove('notes-preview');
 		notesDiv.classList.add('show-notes');
 		notesDiv.focus();
 	},
 	toggleNotesOff: function(e) {
+		e.target.blur();
+		var parentDiv = e.target.parentElement;
+		parentDiv.children[2].classList.add('show');
+		parentDiv.children[2].focus();
+	},
+	saveNotes: function(e) {
 		var parentDiv = e.target.parentElement;
 		var array = this.getArray(this.todos, parentDiv.id);
 		var index = this.getTodoIndex(this.todos, parentDiv.id);
 		array[index].notes = e.target.innerHTML;
-		e.target.blur();
-		this.shallowRender(parentDiv.id);
+		e.target.classList.remove('show-notes');
+		e.target.classList.add('notes-preview');
 	},
 	getArray: function(todos, id) {
 		var array;
