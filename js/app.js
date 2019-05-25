@@ -1,10 +1,10 @@
 var util = {
 	uuid: function() {
-		var uuidString = "";
+		var uuidString = '';
 
 		for (var i = 0; i < 32; i++) {
 			if (i === 8 || i === 12 || i === 16 || i === 20) {
-				uuidString += "-";
+				uuidString += '-';
 			}
 			
 			var randomInt = Math.floor(Math.random() * 16);
@@ -30,7 +30,7 @@ var App = {
 		var partialTemplate = document.querySelector('#handlebars-todo-list-partial').innerHTML;
 		// 3. Compile the template data into a function using Handlebars compile() method:
 		this.todoTemplateMain = Handlebars.compile(mainTemplate);
-		// 4. Partial templates must be registered. These templates are denoted with the ">"
+		// 4. Partial templates must be registered. These templates are denoted with the '>'
 		// symbol and allow achieving a level of recursion in Handlebars.
 		// More info on Partial Templates here:
 		// -https://handlebarsjs.com/partials.html
@@ -41,43 +41,45 @@ var App = {
 	},
 	shallowRender: function(elementToFocusID) {
 		var todoList = document.querySelector('#todo-list');
+		var todo = {
+			id: util.uuid(),
+			text: '',
+			completed: false,
+			notes: '',
+			nestedTodos: []
+		};
+		var focusParent;
+		var lastInput;
 		
 		// get rid of this todo creation here, you have a createTodo function for exactly this purpose:
-		if (this.todos.length === 0) {
-			this.todos.push({
-				id: util.uuid(),
-				text: '',
-				completed: false,
-				notes: '',
-				nestedTodos: []
-			});
+		if (!this.todos.length) {
+			this.todos.push(todo);
 
 			todoList.innerHTML = this.todoTemplateMain({todos: this.todos});
-			var lastInput = this.getLastDivElement(todoList);
+			lastInput = this.getLastDivElement(todoList);
 			lastInput.children[2].classList.add('show');
 			lastInput.children[2].focus();
 		} else {
 			todoList.innerHTML = this.todoTemplateMain({todos: this.todos});
 
-			if (arguments.length > 0) {
-				var focusParent = document.getElementById(elementToFocusID);
-				var focusChild;
+			if (arguments.length) {
+				focusParent = document.getElementById(elementToFocusID);
 
 				if (3 in focusParent.children) {
-					focusChild = focusParent.children[3].lastElementChild;
+					lastInput = focusParent.children[3].lastElementChild;
 				}
 				
-				focusChild = focusParent.children[2];
-				focusChild.value = focusParent.firstElementChild.textContent.trim();
-				focusChild.classList.add('show');
-				focusChild.focus();
+				lastInput = focusParent.children[2];
+				lastInput.value = focusParent.firstElementChild.textContent.trim();
+				lastInput.classList.add('show');
+				lastInput.focus();
 			}
 		}
 	},
 	getLastDivElement: function(ancestorEl) {
 		var descendentEl = ancestorEl.lastElementChild;
 
-		if (descendentEl.type === "text") {
+		if (descendentEl.type === 'text') {
 			return ancestorEl;
 		} else {
 			return this.getLastDivElement(descendentEl);
@@ -94,7 +96,7 @@ var App = {
 	},
 	delegateEvents: function(e) {
 		// .hasAttribute is how you determine if an element has an id, as well as other attributes.
-		if (e.target.classList[0] === 'text' && e.type === 'click' /*&& e.target.hasAttribute("id")*/) {
+		if (e.target.classList[0] === 'text' && e.type === 'click' /*&& e.target.hasAttribute('id')*/) {
 			this.editTodo(e);
 		} else if (e.target.nodeName === 'INPUT' && e.type === 'keydown' && e.which === 9) {
 			e.preventDefault();
@@ -140,14 +142,16 @@ var App = {
 		var ENTER_KEY = 13;
 		var topLevelParent = e.target.parentElement.parentElement.parentElement;
 		var divID 			 = e.target.parentElement.id;
+		var arr;
+		var index;
 
 		if (e.which !== ENTER_KEY) {
 			this.update(e);
 		} else {
-			var arr = this.getArray(this.todos, divID);
-			var index = this.getTodoIndex(this.todos, divID);
+			arr = this.getArray(this.todos, divID);
+			index = this.getTodoIndex(this.todos, divID);
 
-			if (arr[index].nestedTodos.length > 0) {
+			if (arr[index].nestedTodos.length) {
 				this.createTodo(arr[index].nestedTodos, index, topLevelParent, true);
 			} else {
 				this.createTodo(arr, index, topLevelParent);
@@ -168,7 +172,7 @@ var App = {
 				 * If it is many layers deep, you can access it.
 				 */
 				array[index].text = newText;
-			} else if (todo.nestedTodos.length > 0) {
+			} else if (todo.nestedTodos.length) {
 				this.updateHelper(todo.nestedTodos, id, newText);
 			}
 		}, this);
@@ -199,7 +203,7 @@ var App = {
 		var todoArray = this.getArray(this.todos, div.id);
 		var todoIndex = this.getTodoIndex(this.todos, div.id);
 
-		if (todoArray[todoIndex].nestedTodos.length > 0) {
+		if (todoArray[todoIndex].nestedTodos.length) {
 			return;
 		} else {
 			todoArray.splice(todoIndex, 1);
@@ -225,10 +229,12 @@ var App = {
 		var todoArray = this.getArray(this.todos, parentLi.id);
 		var todoIndex = this.getTodoIndex(this.todos, parentLi.id);
 		var previousSibling = parentLi.previousElementSibling;
+		var siblingArray;
+		var siblingIndex;
 
 		if (previousSibling && previousSibling.nodeName === 'LI') {
-			var siblingArray = this.getArray(this.todos, previousSibling.id);
-			var siblingIndex = this.getTodoIndex(this.todos, previousSibling.id);
+			siblingArray = this.getArray(this.todos, previousSibling.id);
+			siblingIndex = this.getTodoIndex(this.todos, previousSibling.id);
 			siblingArray[siblingIndex].nestedTodos.push(todoArray[todoIndex]);
 			todoArray.splice(todoIndex, 1);
 			this.shallowRender(parentLi.id);
@@ -268,6 +274,9 @@ var App = {
 		this.shallowRender(currentDiv.id);
 	},
 	toggleNotesOn: function(e) {
+		var parentDiv = e.target.parentElement;
+		var array = this.getArray(this.todos, parentDiv.id);
+		var index = this.getTodoIndex(this.todos, parentDiv.id);
 		var notesDiv;
 
 		// ternary operator here? blur will still need to be in its own conditional
@@ -277,16 +286,14 @@ var App = {
 		} else {
 			notesDiv = e.target;
 		}
-		var parentDiv = e.target.parentElement;
-		var array = this.getArray(this.todos, parentDiv.id);
-		var index = this.getTodoIndex(this.todos, parentDiv.id);
+		
 		notesDiv.classList.remove('notes-preview');
 		notesDiv.classList.add('show-notes');
 		notesDiv.focus();
 	},
 	toggleNotesOff: function(e) {
-		e.target.blur();
 		var parentDiv = e.target.parentElement;
+		e.target.blur();
 		parentDiv.children[2].classList.add('show');
 		parentDiv.children[2].focus();
 	},
@@ -305,7 +312,7 @@ var App = {
 			if (id === todos[i].id) {
 				array = todos;
 				break;
-			} else if (todos[i].nestedTodos.length > 0) {
+			} else if (todos[i].nestedTodos.length) {
 				array = this.getArray(todos[i].nestedTodos, id);
 
 				// Without this check, the for loop cannot be escaped, even if a match exists.
@@ -324,7 +331,7 @@ var App = {
 			if (id === todos[i].id) {
 				index = i;
 				break;
-			} else if (todos[i].nestedTodos.length > 0) {
+			} else if (todos[i].nestedTodos.length) {
 				index = this.getTodoIndex(todos[i].nestedTodos, id);
 
 				// Without this check, the for loop cannot be escaped, even if a match exists.
