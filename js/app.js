@@ -153,7 +153,7 @@ var App = {
 		} else if (e.target.nodeName === 'INPUT' && e.type === 'keydown' && e.which === 9) {
 			e.preventDefault();
 			/*
-		 	 * There is not keycode for Shift + Tab. Instead, there is a separate property on the event object, 
+		 	 * There is no keycode for Shift + Tab. Instead, there is a separate property on the event object, 
 		 	 * .shiftKey that returns a Boolean indicating whether the shift key was pressed or not when the
 		 	 * given event occurs.
 		 	 */
@@ -240,6 +240,16 @@ var App = {
 		array[index].text = inputFieldText.trim();
 	},
  
+ 	/**
+ 	 * createTodo() is invoked by editKeyUp when the ENTER key is pressed.
+ 	 * This method is responsible for appending todos to the todolist based
+ 	 * on the different possible scenarios.
+ 	 *
+ 	 * @param {Array} todos
+ 	 * @param {Number} i
+ 	 * @param {Element} parent
+ 	 * @param {Boolean} nesting - optional
+ 	 */
 	createTodo: function(todos, i, parent, nesting) {
 		var indexToAdd = i + 1; // you don't really need this, you can add i + 1
 		var todo = {
@@ -261,6 +271,14 @@ var App = {
 			this.shallowRender(todos[indexToAdd].id);
 		}
 	},
+
+	/**
+	 * destroyTodo() is invoked when the BACKSPACE key causes a keydown event
+	 * on an empty <input> element. That element is then spliced from todos
+	 * and another element is focused depending on the conditions.
+	 *
+	 * @param {Event Object} e
+	 */
 	destroyTodo: function(e) {
 		var div = e.target.parentElement;
 		var todoArray = this.getArray(this.todos, div.id);
@@ -283,11 +301,30 @@ var App = {
 			}
 		}
 	},
+
+	/**
+	 * unfocus() is invoked whenever an <input> element loses focus. Once this
+	 * occurs, the text content of the parent <div> element is updated to 
+	 * reflect the new <input> value. Helps prevent the page from having to 
+	 * render again.
+	 *
+	 * @param {Event Object} e
+	 */
 	unfocus: function(e) {
 		e.target.previousElementSibling.previousElementSibling.textContent = e.target.value.trim();
 		e.target.classList.remove('show');
 	},
+
+	/**
+	 * nestTodo() is invoked when a TAB keydown event occurs. This method will 
+	 * cause the current <div> element to become a child of the previous <div>
+	 * element.
+	 *
+	 * @param {Event Object} e
+	 */
 	nestTodo: function(e) {
+		// *can some logic be reduced here with a  conditional check and a return statment? Run through this function and 
+		// check all the conditions to confirm.
 		var parentLi = e.target.parentElement;
 		var todoArray = this.getArray(this.todos, parentLi.id);
 		var todoIndex = this.getTodoIndex(this.todos, parentLi.id);
@@ -303,7 +340,16 @@ var App = {
 			this.shallowRender(parentLi.id);
 		}
 	},
+
+	/**
+	 * unnestTodo() is invoked when a TAB keydown event occurs while the SHIFT
+	 * key is being held. This method causes the current <div> to unnest one
+	 * layer, if it is a child of another <div>
+	 *
+	 * @param {Event Object} e
+	 */
 	unnestTodo: function(e) {
+		// * Rework the logic of this function!
 		var currentLI = e.target.parentElement;
 		var todoArray = this.getArray(this.todos, currentLI.id);
 		var todoIndex = this.getTodoIndex(this.todos, currentLI.id);
@@ -328,6 +374,14 @@ var App = {
 		// If an element's futureParent.nodeName === 'html', the element is already on the outermost ul,
 		// the above conditionals will not execute, and this function will return undefined.
 	},
+
+	/**
+	 * completeTodo() is invoked when an ENTER keydown event occurs on an <input>
+	 * element while CTRL key is being held. This method updates the current .completed 
+	 * property value of that todo object to its inverse.
+	 *
+	 * @param {Event Object} e
+	 */
 	completeTodo: function(e) {
 		var currentDiv = e.target.parentElement;
 		var todoArray = this.getArray(this.todos, currentDiv.id);
@@ -336,6 +390,15 @@ var App = {
 		todoArray[todoIndex].completed = !todoStatus;
 		this.shallowRender(currentDiv.id);
 	},
+
+	/**
+	 * toggleNotesOn() is invoked when an ENTER keydown event occurs on an <input>
+	 * element while the SHIFT key is being held. This method will toggle the <div>
+	 * element with a class of 'notes', allowing a user to type additional
+	 * information about a given todo.
+	 *
+	 * @param {Event Object} e
+	 */
 	toggleNotesOn: function(e) {
 		var parentDiv = e.target.parentElement;
 		var array = this.getArray(this.todos, parentDiv.id);
@@ -354,20 +417,45 @@ var App = {
 		notesDiv.classList.add('show-notes');
 		notesDiv.focus();
 	},
+
+	/**
+	 * toggleNotesOff() is invoked when an ENTER keydown event occurs on a <div>
+	 * element with a class of 'notes'. It will remove focus from the current <div>
+	 * and give focus to its corresponding <input> element.
+	 *
+	 * @param {Event Object} e
+	 */
 	toggleNotesOff: function(e) {
 		var parentDiv = e.target.parentElement;
 		e.target.blur();
+		e.target.classList.remove('show-notes');
+		e.target.classList.add('notes-preview');
 		parentDiv.children[2].classList.add('show');
 		parentDiv.children[2].focus();
 	},
+
+	/**
+	 * saveNotes() is invoked when a focusout event occurs on a <div> element with
+	 * the class 'show-notes'. This method causes the .notes property of a given todo
+	 * to be updated with the new value found in the 'notes' <div> element.
+	 *
+	 * @param {Event Object} e
+	 */
 	saveNotes: function(e) {
 		var parentDiv = e.target.parentElement;
 		var array = this.getArray(this.todos, parentDiv.id);
 		var index = this.getTodoIndex(this.todos, parentDiv.id);
 		array[index].notes = e.target.innerHTML;
-		e.target.classList.remove('show-notes');
-		e.target.classList.add('notes-preview');
 	},
+
+	/**
+	 * getArray() returns the array at which the todo that corresponds with the passed
+	 * ID can be found.
+	 *
+	 * @param {Array} todos
+	 * @param {String} id
+	 * @return {Array} array
+	 */
 	getArray: function(todos, id) {
 		var array;
 
@@ -387,6 +475,15 @@ var App = {
 
 		return array;
 	},
+
+	/**
+	 * getTodoIndex() returns the index at which the todo that corresponds with the passed
+	 * ID can be found.
+	 *
+	 * @param {Array} todos
+	 * @param {String} id
+	 * @return {Array} index
+	 */
 	getTodoIndex: function(todos, id) {
 		var index;
 
