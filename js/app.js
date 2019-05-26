@@ -234,7 +234,10 @@ var App = {
 		// You can access the parent of an element using .parentElement:
 		var divID 			 = e.target.parentElement.id;
 		var inputFieldText 	 = e.target.value;
-		this.updateHelper(this.todos, divID, inputFieldText.trim());
+		//this.updateHelper(this.todos, divID, inputFieldText.trim());
+		var array = this.getArray(this.todos, divID);
+		var index = this.getTodoIndex(this.todos, divID);
+		array[index].text = inputFieldText.trim();
 	},
 
 	/**
@@ -242,19 +245,19 @@ var App = {
 	 * of a given todo, while using recursion if necessary to find the given
 	 * todo.
 	 */
-	updateHelper: function(todos, id, newText, nesting) {
-		todos.forEach(function(todo, index, array) {
-			if (todo.id === id) {
-				/* You can always reference the array currently being processed in the callback function.
-				 * When you reference an array, you are always referencing its address in memory, so even
-				 * If it is many layers deep, you can access it.
-				 */
-				array[index].text = newText;
-			} else if (todo.nestedTodos.length) {
-				this.updateHelper(todo.nestedTodos, id, newText);
-			}
-		}, this);
-	},
+	// updateHelper: function(todos, id, newText, nesting) {
+	// 	todos.forEach(function(todo, index, array) {
+	// 		if (todo.id === id) {
+	// 			 You can always reference the array currently being processed in the callback function.
+	// 			 * When you reference an array, you are always referencing its address in memory, so even
+	// 			 * If it is many layers deep, you can access it.
+				 
+	// 			array[index].text = newText;
+	// 		} else if (todo.nestedTodos.length) {
+	// 			this.updateHelper(todo.nestedTodos, id, newText);
+	// 		}
+	// 	}, this);
+	// },
 	createTodo: function(todos, i, parent, nesting) {
 		var indexToAdd = i + 1; // you don't really need this, you can add i + 1
 		var todo = {
