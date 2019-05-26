@@ -1,4 +1,9 @@
 var util = {
+	/**
+	 * uuid() generates and returns a compliant universally unique identifier.
+	 *
+	 * @return {String} uuidString
+	 */
 	uuid: function() {
 		var uuidString = '';
 
@@ -13,6 +18,18 @@ var util = {
 
 		return uuidString;
 	},
+
+	/**
+	 * save() stores data in the browser's local storage if both the 
+	 * namespace and data arguments are passed in. If only namespace
+	 * is passed to save(), localStorage returns the data at that 
+	 * namespace. If the namespace does not exist, and empty array is
+	 * returned.
+	 *
+	 * @param {String} namespace
+	 * @param {Array} data
+	 * @return {Array}
+	 */
 	save: function(namespace, data) {
 		if (arguments.length > 1) {
 			localStorage.setItem(namespace, JSON.stringify(data));
@@ -21,8 +38,14 @@ var util = {
 		}
 	},
 }
+
 var App = {
 	todos: /*util.save('todos')*/[],
+
+	/**
+	 * init() initiates the rendering of the application and invokes
+	 * the event listeners on the rendered HTML elements.
+	 */
 	init: function() {
 		// 1. This selects the Handlebars code from the DOM and stores it in a variable:
 		var mainTemplate 	= document.querySelector('#handlebars-todo-list-main').innerHTML;
@@ -39,6 +62,13 @@ var App = {
 		this.shallowRender();
 		this.createEventListeners();
 	},
+
+	/**
+	 * shallowRender() controls how the application is to be rendered 
+	 * and the elements that receive focus at that time.
+	 *
+	 * @param {String} elementToFocusID
+	 */
 	shallowRender: function(elementToFocusID) {
 		var todoList = document.querySelector('#todo-list');
 		var todo = {
@@ -66,6 +96,7 @@ var App = {
 				focusParent = document.getElementById(elementToFocusID);
 
 				if (3 in focusParent.children) {
+					// Can I use getLastDivElement here?
 					lastInput = focusParent.children[3].lastElementChild;
 				}
 				
@@ -76,6 +107,15 @@ var App = {
 			}
 		}
 	},
+
+	/**
+	 * getLastDivElement() returns the last <div> inside a parent <li>.
+	 * If the <li> has nestedTodos, getLastDivElement() recurses until
+	 * it can return a <div>.
+	 *
+	 * @param {Element} ancestorEl
+	 * @return {Element} descendentEl
+	 */
 	getLastDivElement: function(ancestorEl) {
 		var descendentEl = ancestorEl.lastElementChild;
 
@@ -85,6 +125,11 @@ var App = {
 			return this.getLastDivElement(descendentEl);
 		}
 	},
+
+	/**
+	 * createEventListeners() adds event listeners on the <main> todo list
+	 * HTML Element.
+	 */
 	createEventListeners: function() {
 		var todoList = document.querySelector('#todo-list');
 
@@ -94,6 +139,13 @@ var App = {
 		todoList.addEventListener('keydown', this.delegateEvents.bind(this));
 		todoList.addEventListener('focusout', this.delegateEvents.bind(this));
 	},
+
+	/**
+	 * delegatEvents() handles the criteria of the different events that can
+	 * occur on the todo list, and invokes the appropriate method.
+	 *
+	 * @param {Event Object} e
+	 */
 	delegateEvents: function(e) {
 		// .hasAttribute is how you determine if an element has an id, as well as other attributes.
 		if (e.target.classList[0] === 'text' && e.type === 'click' /*&& e.target.hasAttribute('id')*/) {
@@ -132,12 +184,26 @@ var App = {
 			this.saveNotes(e);
 		}
 	},
+
+	/**
+	 * editTodo() is invoked when a <div> with the class of 'text' undergoes
+	 * a 'click' event. The 'show' class is added to that element's <input> child
+	 * and it is focused.
+	 * 
+	 * @param {Event Object} e
+	 */
 	editTodo: function(e) {
 		var inputFieldEl = e.target.nextElementSibling.nextElementSibling;
 		inputFieldEl.value = e.target.textContent.trim();
 		inputFieldEl.classList.add('show');
 		inputFieldEl.focus();
 	},
+
+	/**
+	 * editKeyUp() is invoked when keyup events occur in an <input> element.
+	 *
+	 * @param {Event Object} e
+	 */
 	editKeyUp: function(e) {
 		var ENTER_KEY = 13;
 		var topLevelParent = e.target.parentElement.parentElement.parentElement;
@@ -158,12 +224,24 @@ var App = {
 			}
 		}
 	},
+
+	/**
+	 * update() is invoked when the value of an <input> element is changed.
+	 *
+	 * @param {Event Object} e
+	 */
 	update: function(e) {
 		// You can access the parent of an element using .parentElement:
 		var divID 			 = e.target.parentElement.id;
 		var inputFieldText 	 = e.target.value;
 		this.updateHelper(this.todos, divID, inputFieldText.trim());
 	},
+
+	/**
+	 * updateHelper() is invoked by update. Its purpose is to update the text
+	 * of a given todo, while using recursion if necessary to find the given
+	 * todo.
+	 */
 	updateHelper: function(todos, id, newText, nesting) {
 		todos.forEach(function(todo, index, array) {
 			if (todo.id === id) {
