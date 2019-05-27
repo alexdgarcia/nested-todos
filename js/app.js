@@ -59,17 +59,17 @@ var App = {
 		// -https://handlebarsjs.com/partials.html
 		// -http://www.independent-software.com/recursion-in-handlebars-with-depth-level.html
 		Handlebars.registerPartial('todo', Handlebars.compile(partialTemplate));
-		this.shallowRender();
+		this.render();
 		this.createEventListeners();
 	},
 
 	/**
-	 * shallowRender() controls how the application is to be rendered 
+	 * render() controls how the application is to be rendered 
 	 * and the elements that receive focus at that time.
 	 *
 	 * @param {String} elementToFocusID
 	 */
-	shallowRender: function(elementToFocusID) {
+	render: function(elementToFocusID) {
 		var todoList = document.querySelector('#todo-list');
 		var todo = {
 			id: util.uuid(),
@@ -78,6 +78,7 @@ var App = {
 			notes: '',
 			nestedTodos: []
 		};
+
 		var focusParent;
 		var lastInput;
 		
@@ -165,7 +166,7 @@ var App = {
 		} else if (e.target.nodeName === 'INPUT' && e.type === 'keyup' && !e.ctrlKey && !e.shiftKey) {
 			this.editKeyUp(e);
 		} else if (e.target.nodeName === 'INPUT' && e.type === 'focusout') {
-			this.unfocus(e);
+			this.unfocusTodo(e);
 		} else if (e.target.nodeName === 'INPUT' && e.type === 'keydown' && e.which === 13 && e.ctrlKey) {
 			e.preventDefault();
 			this.completeTodo(e);
@@ -181,7 +182,7 @@ var App = {
 		} else if (e.target.classList[0] === 'notes' && e.type === 'click') {
 			this.toggleNotesOn(e);
 		} else if (e.target.classList[1] === 'show-notes' && e.type === 'focusout') {
-			this.saveNotes(e);
+			this.updateNotes(e);
 		}
 	},
 
@@ -212,7 +213,7 @@ var App = {
 		var index;
 
 		if (e.which !== ENTER_KEY) {
-			this.update(e);
+			this.updateTodo(e);
 		} else {
 			arr = this.getArray(this.todos, divID);
 			index = this.getTodoIndex(this.todos, divID);
@@ -226,15 +227,14 @@ var App = {
 	},
 
 	/**
-	 * update() is invoked when the value of an <input> element is changed.
+	 * updateTodo() is invoked when the value of an <input> element is changed.
 	 *
 	 * @param {Event Object} e
 	 */
-	update: function(e) {
+	updateTodo: function(e) {
 		// You can access the parent of an element using .parentElement:
 		var divID 			 = e.target.parentElement.id;
 		var inputFieldText 	 = e.target.value;
-		//this.updateHelper(this.todos, divID, inputFieldText.trim());
 		var array = this.getArray(this.todos, divID);
 		var index = this.getTodoIndex(this.todos, divID);
 		array[index].text = inputFieldText.trim();
@@ -262,13 +262,13 @@ var App = {
 
 		if (nesting) {
 			todos.unshift(todo);
-			this.shallowRender(todos[0].id);
+			this.render(todos[0].id);
 		} else if (arguments.length < 3 || parent.nodeName === 'MAIN') {
 			todos.splice(indexToAdd, 0, todo);
-			this.shallowRender(todos[indexToAdd].id);
+			this.render(todos[indexToAdd].id);
 		} else {
 			todos.splice(indexToAdd, 0, todo);
-			this.shallowRender(todos[indexToAdd].id);
+			this.render(todos[indexToAdd].id);
 		}
 	},
 
@@ -291,26 +291,26 @@ var App = {
 			
 			// ternary operators here maybe??
 			if (div.previousElementSibling !== null) {
-				this.shallowRender(div.previousElementSibling.id);
+				this.render(div.previousElementSibling.id);
 			} else if (div.parentElement.parentElement.nodeName !== 'MAIN') {
-				this.shallowRender(div.parentElement.parentElement.id);
+				this.render(div.parentElement.parentElement.id);
 			} else if (div.nextElementSibling !== null) {
-				this.shallowRender(div.nextElementSibling.id);
+				this.render(div.nextElementSibling.id);
 			} else {
-				this.shallowRender();
+				this.render();
 			}
 		}
 	},
 
 	/**
-	 * unfocus() is invoked whenever an <input> element loses focus. Once this
-	 * occurs, the text content of the parent <div> element is updated to 
+	 * unfocusTodo() is invoked whenever an <input> element loses focus. Once this
+	 * occurs, the text content of the parent <div> element is updateTodod to 
 	 * reflect the new <input> value. Helps prevent the page from having to 
 	 * render again.
 	 *
 	 * @param {Event Object} e
 	 */
-	unfocus: function(e) {
+	unfocusTodo: function(e) {
 		e.target.previousElementSibling.previousElementSibling.textContent = e.target.value.trim();
 		e.target.classList.remove('show');
 	},
@@ -337,7 +337,7 @@ var App = {
 			siblingIndex = this.getTodoIndex(this.todos, previousSibling.id);
 			siblingArray[siblingIndex].nestedTodos.push(todoArray[todoIndex]);
 			todoArray.splice(todoIndex, 1);
-			this.shallowRender(parentLi.id);
+			this.render(parentLi.id);
 		}
 	},
 
@@ -362,13 +362,13 @@ var App = {
 			var parentIndex = this.getTodoIndex(this.todos, futureParent.id);
 			parentArray[parentIndex].nestedTodos.splice(previousParentIndex + 1, 0, todoArray[todoIndex]);
 			todoArray.splice(todoIndex, 1);
-			this.shallowRender(currentLI.id);
+			this.render(currentLI.id);
 		} else if (futureParent.nodeName === 'MAIN') {
 			var currentParent = currentLI.parentElement.parentElement;
 			var parentIndex = this.getTodoIndex(this.todos, currentParent.id);
 			this.todos.splice(parentIndex + 1, 0, todoArray[todoIndex]);
 			todoArray.splice(todoIndex, 1);
-			this.shallowRender(currentLI.id);
+			this.render(currentLI.id);
 		}
 
 		// If an element's futureParent.nodeName === 'html', the element is already on the outermost ul,
@@ -377,7 +377,7 @@ var App = {
 
 	/**
 	 * completeTodo() is invoked when an ENTER keydown event occurs on an <input>
-	 * element while CTRL key is being held. This method updates the current .completed 
+	 * element while CTRL key is being held. This method updateTodos the current .completed 
 	 * property value of that todo object to its inverse.
 	 *
 	 * @param {Event Object} e
@@ -388,7 +388,7 @@ var App = {
 		var todoIndex = this.getTodoIndex(this.todos, currentDiv.id);
 		var todoStatus = todoArray[todoIndex].completed;
 		todoArray[todoIndex].completed = !todoStatus;
-		this.shallowRender(currentDiv.id);
+		this.render(currentDiv.id);
 	},
 
 	/**
@@ -435,13 +435,13 @@ var App = {
 	},
 
 	/**
-	 * saveNotes() is invoked when a focusout event occurs on a <div> element with
+	 * updateNotes() is invoked when a focusout event occurs on a <div> element with
 	 * the class 'show-notes'. This method causes the .notes property of a given todo
-	 * to be updated with the new value found in the 'notes' <div> element.
+	 * to be updateTodod with the new value found in the 'notes' <div> element.
 	 *
 	 * @param {Event Object} e
 	 */
-	saveNotes: function(e) {
+	updateNotes: function(e) {
 		var parentDiv = e.target.parentElement;
 		var array = this.getArray(this.todos, parentDiv.id);
 		var index = this.getTodoIndex(this.todos, parentDiv.id);
