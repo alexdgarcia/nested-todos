@@ -12,6 +12,10 @@ main {
 	flex-direction: column;
 }
 
+#instructions {
+	margin-bottom: 15px;
+}
+
 ul {
 	/* Bullets will spill outside container by default, so we use this property to keep bullets inside the div. */
 	list-style-position: inside;
