@@ -40,7 +40,7 @@ var util = {
 }
 
 var App = {
-	todos: /*util.save('todos')*/[],
+	todos: util.save('data'),
 
 	/**
 	 * init() initiates the rendering of the application and invokes
@@ -270,6 +270,8 @@ var App = {
 			todos.splice(indexToAdd, 0, todo);
 			this.render(todos[indexToAdd].id);
 		}
+
+		this.saveTodos();
 	},
 
 	/**
@@ -299,6 +301,8 @@ var App = {
 			} else {
 				this.render();
 			}
+
+			this.saveTodos();
 		}
 	},
 
@@ -338,6 +342,7 @@ var App = {
 			siblingArray[siblingIndex].nestedTodos.push(todoArray[todoIndex]);
 			todoArray.splice(todoIndex, 1);
 			this.render(parentLi.id);
+			this.saveTodos();
 		}
 	},
 
@@ -371,6 +376,8 @@ var App = {
 			this.render(currentLI.id);
 		}
 
+		this.saveTodos();
+
 		// If an element's futureParent.nodeName === 'html', the element is already on the outermost ul,
 		// the above conditionals will not execute, and this function will return undefined.
 	},
@@ -389,6 +396,7 @@ var App = {
 		var todoStatus = todoArray[todoIndex].completed;
 		todoArray[todoIndex].completed = !todoStatus;
 		this.render(currentDiv.id);
+		this.saveTodos();
 	},
 
 	/**
@@ -503,6 +511,13 @@ var App = {
 
 		return index;
 	},
+
+	/**
+	 * saveTodos() stores the current state of the todos property in localStorage.
+	 */
+	saveTodos: function() {
+		util.save('data', this.todos);
+	}
 }
 
 App.init();
