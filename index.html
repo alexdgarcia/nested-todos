@@ -27,7 +27,7 @@
 	<script id="handlebars-todo-list-partial" type="text/x-handlebars-template">
 		<li {{#if this.completed}}class="completed"{{/if}} id="{{this.id}}">
 			<div class="text">{{this.text}}</div>
-			<div contenteditable="true"class="notes{{#if this.notes}} notes-preview{{/if}}">
+			<div contenteditable="true" class="notes{{#if this.notes}} notes-preview{{/if}}">
 				{{{this.notes}}}
 			</div>
 			<input type="text">

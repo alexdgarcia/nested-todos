@@ -51,6 +51,8 @@ ul li {
 	height: auto;
 	width: 300px;
 	display: inline-block;
+	font-family: sans-serif;
+	font-size: 15px;
 }
 
 input {
@@ -59,6 +61,7 @@ input {
 	width: 99%;
 	top: 0;
 	left: 10px;
+	font-size: 15px;
 
 	/*
      * `visibility: hidden` allows you to hide an element while still respecting
@@ -119,7 +122,12 @@ input:focus {
 	margin-left: 20px;
 	margin-bottom: 5px;
 	overflow: hidden;
-	max-height: 15px;
+	max-height: 25px;
 	color: grey;
 	outline: none;
+}
+
+.notes, .show-notes, .note-preview {
+	font-family: sans-serif;
+	font-size: 12px;
 }

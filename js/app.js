@@ -182,7 +182,7 @@ var App = {
 		} else if (e.target.classList[0] === 'notes' && e.type === 'click') {
 			this.toggleNotesOn(e);
 		} else if (e.target.classList[1] === 'show-notes' && e.type === 'focusout') {
-			this.updateNotes(e);
+			this.toggleNotesOff(e);
 		}
 	},
 
@@ -194,8 +194,9 @@ var App = {
 	 * @param {Event Object} e
 	 */
 	editTodo: function(e) {
-		var inputFieldEl = e.target.nextElementSibling.nextElementSibling;
-		inputFieldEl.value = e.target.textContent.trim();
+		var parentDiv = e.target.parentElement;
+		var inputFieldEl = parentDiv.children[2];
+		inputFieldEl.value = parentDiv.children[0].textContent.trim();
 		inputFieldEl.classList.add('show');
 		inputFieldEl.focus();
 	},
@@ -438,22 +439,15 @@ var App = {
 		e.target.blur();
 		e.target.classList.remove('show-notes');
 		e.target.classList.add('notes-preview');
-		parentDiv.children[2].classList.add('show');
-		parentDiv.children[2].focus();
-	},
-
-	/**
-	 * updateNotes() is invoked when a focusout event occurs on a <div> element with
-	 * the class 'show-notes'. This method causes the .notes property of a given todo
-	 * to be updateTodod with the new value found in the 'notes' <div> element.
-	 *
-	 * @param {Event Object} e
-	 */
-	updateNotes: function(e) {
-		var parentDiv = e.target.parentElement;
 		var array = this.getArray(this.todos, parentDiv.id);
 		var index = this.getTodoIndex(this.todos, parentDiv.id);
 		array[index].notes = e.target.innerHTML;
+
+		if (e.type === 'keydown') {
+			this.editTodo(e);
+		}
+
+		this.saveTodos();
 	},
 
 	/**
