@@ -8,15 +8,15 @@ You can access a working example [here]().
 
 ### Type a todo:
 
-![](./images/one.png)
+![](images/one.png)
 
 ### Press ENTER to create a new todo:
 
-![](./images/two.png)
+![](images/two.png)
 
 ### You can nest a todo as a child of another  todo by pressing TAB
 
-![](./images/three.png)
+![](images/three.png)
 
 ### SHIFT + TAB will unnest a todo
 
