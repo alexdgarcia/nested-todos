@@ -287,7 +287,8 @@ var App = {
 			
 			// ternary operators here maybe??
 			if (div.previousElementSibling !== null) {
-				this.render(div.previousElementSibling.id);
+				divID = this.getLastNestedTodo(div.previousElementSibling.id);
+				this.render(divID);
 			} else if (div.parentElement.parentElement.nodeName !== 'MAIN') {
 				this.render(div.parentElement.parentElement.id);
 			} else if (div.nextElementSibling !== null) {
@@ -297,6 +298,20 @@ var App = {
 			}
 
 			this.saveTodos();
+		}
+	},
+
+	getLastNestedTodo: function(startTodo) {
+		//debugger;
+		var todoArray = this.getArray(this.todos, startTodo);
+		var todoIndex = this.getTodoIndex(this.todos, startTodo);
+		var length;
+
+		if (todoArray[todoIndex].nestedTodos.length) {
+			length = todoArray[todoIndex].nestedTodos.length;
+			return this.getLastNestedTodo(todoArray[todoIndex].nestedTodos[length - 1].id);
+		} else {
+			return startTodo;
 		}
 	},
 
