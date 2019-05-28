@@ -138,8 +138,7 @@ var App = {
 	 * @param {Event Object} e
 	 */
 	delegateEvents: function(e) {
-		// .hasAttribute is how you determine if an element has an id, as well as other attributes.
-		if (e.target.classList[0] === 'text' && e.type === 'click' /*&& e.target.hasAttribute('id')*/) {
+		if (e.target.classList[0] === 'text' && e.type === 'click') {
 			this.editTodo(e);
 		} else if (e.target.nodeName === 'INPUT' && e.type === 'keydown' && e.which === 9) {
 			e.preventDefault();
@@ -223,7 +222,6 @@ var App = {
 	 * @param {Event Object} e
 	 */
 	updateTodo: function(e) {
-		// You can access the parent of an element using .parentElement:
 		var divID 			 = e.target.parentElement.id;
 		var inputFieldText 	 = e.target.value;
 		var array = this.getArray(this.todos, divID);
@@ -302,7 +300,6 @@ var App = {
 	},
 
 	getLastNestedTodo: function(startTodo) {
-		//debugger;
 		var todoArray = this.getArray(this.todos, startTodo);
 		var todoIndex = this.getTodoIndex(this.todos, startTodo);
 		var length;
@@ -358,7 +355,10 @@ var App = {
 	/**
 	 * unnestTodo() is invoked when a TAB keydown event occurs while the SHIFT
 	 * key is being held. This method causes the current <div> to unnest one
-	 * layer, if it is a child of another <div>
+	 * layer, if it is a child of another <div>. If an element's 
+	 * futureParent.nodeName === 'html', the element is already on the outermost
+	 * <ul>, the control statements will not execute, and this function will 
+	 * return undefined.
 	 *
 	 * @param {Event Object} e
 	 */
@@ -386,9 +386,6 @@ var App = {
 		}
 
 		this.saveTodos();
-
-		// If an element's futureParent.nodeName === 'html', the element is already on the outermost ul,
-		// the above conditionals will not execute, and this function will return undefined.
 	},
 
 	/**
