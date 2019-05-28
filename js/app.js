@@ -71,21 +71,12 @@ var App = {
 	 */
 	render: function(elementToFocusID) {
 		var todoList = document.querySelector('#todo-list');
-		var todo = {
-			id: util.uuid(),
-			text: '',
-			completed: false,
-			notes: '',
-			nestedTodos: []
-		};
-
 		var focusParent;
 		var lastInput;
 		
 		// get rid of this todo creation here, you have a createTodo function for exactly this purpose:
 		if (!this.todos.length) {
-			this.todos.push(todo);
-
+			this.createTodo();
 			todoList.innerHTML = this.todoTemplateMain({todos: this.todos});
 			lastInput = this.getLastDivElement(todoList);
 			lastInput.children[2].classList.add('show');
@@ -97,7 +88,6 @@ var App = {
 				focusParent = document.getElementById(elementToFocusID);
 
 				if (3 in focusParent.children) {
-					// Can I use getLastDivElement here?
 					lastInput = focusParent.children[3].lastElementChild;
 				}
 				
@@ -264,6 +254,8 @@ var App = {
 		if (nesting) {
 			todos.unshift(todo);
 			this.render(todos[0].id);
+		} else if (!arguments.length) {
+			this.todos.push(todo);
 		} else if (arguments.length < 3 || parent.nodeName === 'MAIN') {
 			todos.splice(indexToAdd, 0, todo);
 			this.render(todos[indexToAdd].id);
@@ -286,6 +278,7 @@ var App = {
 		var div = e.target.parentElement;
 		var todoArray = this.getArray(this.todos, div.id);
 		var todoIndex = this.getTodoIndex(this.todos, div.id);
+		var divID;
 
 		if (todoArray[todoIndex].nestedTodos.length) {
 			return;
@@ -436,11 +429,11 @@ var App = {
 	 */
 	toggleNotesOff: function(e) {
 		var parentDiv = e.target.parentElement;
+		var array = this.getArray(this.todos, parentDiv.id);
+		var index = this.getTodoIndex(this.todos, parentDiv.id);
 		e.target.blur();
 		e.target.classList.remove('show-notes');
 		e.target.classList.add('notes-preview');
-		var array = this.getArray(this.todos, parentDiv.id);
-		var index = this.getTodoIndex(this.todos, parentDiv.id);
 		array[index].notes = e.target.innerHTML;
 
 		if (e.type === 'keydown') {
@@ -505,6 +498,8 @@ var App = {
 
 		return index;
 	},
+
+
 
 	/**
 	 * saveTodos() stores the current state of the todos property in localStorage.
