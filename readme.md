@@ -14,19 +14,25 @@ You can access a working example [here](http://alexdgarcia.github.io/nested-todo
 
 ![](images/two.png)
 
-### You can nest a todo as a child of another  todo by pressing TAB
+### You can nest a todo as a child of another  todo by pressing TAB:
 
 ![](images/three.png)
 
-### SHIFT + TAB will unnest a todo
+### SHIFT + TAB will unnest a todo:
 
 ![](images/four.png)
 
-### CTRL + ENTER will mark a todo completed
+### BACKSPACE on an empty todo will delete that todo:
+
+![](images/seven.png)
+
+![](images/eight.png)
+
+### CTRL + ENTER will mark a todo completed:
 
 ![](images/five.png)
 
-### You can toggle todo notes on and off with SHIFT + ENTER
+### You can toggle todo notes on and off with SHIFT + ENTER:
 
 ![](images/six.png)
 
