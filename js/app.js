@@ -75,7 +75,6 @@
 			var focusParent;
 			var lastInput;
 			
-			// get rid of this todo creation here, you have a createTodo function for exactly this purpose:
 			if (!this.todos.length) {
 				this.createTodo();
 				todoList.innerHTML = this.todoTemplateMain({todos: this.todos});
@@ -101,6 +100,7 @@
 					focusParent.children[2].value = focusParent.firstElementChild.textContent.trim();
 					focusParent.children[2].classList.add('show');
 					focusParent.children[2].focus();
+					console.log(focusParent, '    ', focusParent.children[2]);
 				}
 			}
 		},
