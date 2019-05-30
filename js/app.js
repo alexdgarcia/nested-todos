@@ -97,7 +97,7 @@
 					lastInput.classList.add('show');
 					lastInput.focus();
 				} else {
-					focusParent = todoList.firstElementChild.firstElementChild
+					focusParent = todoList.firstElementChild.firstElementChild;
 					focusParent.children[2].value = focusParent.firstElementChild.textContent.trim();
 					focusParent.children[2].classList.add('show');
 					focusParent.children[2].focus();
