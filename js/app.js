@@ -73,14 +73,14 @@
 		render: function(elementToFocusID) {
 			var todoList = document.querySelector('#todo-list');
 			var focusParent;
-			var lastInput;
+			var childElToFocus;
 			
 			if (!this.todos.length) {
 				this.createTodo();
 				todoList.innerHTML = this.todoTemplateMain({todos: this.todos});
-				lastInput = this.getLastDivElement(todoList);
-				lastInput.children[2].classList.add('show');
-				lastInput.children[2].focus();
+				childElToFocus = this.getLastDivElement(todoList);
+				childElToFocus.children[2].classList.add('show');
+				childElToFocus.children[2].focus();
 			} else {
 				todoList.innerHTML = this.todoTemplateMain({todos: this.todos});
 
@@ -88,19 +88,19 @@
 					focusParent = document.getElementById(elementToFocusID);
 
 					if (3 in focusParent.children) {
-						lastInput = focusParent.children[3].lastElementChild;
+						childElToFocus = focusParent.children[3].lastElementChild;
 					}
 					
-					lastInput = focusParent.children[2];
-					lastInput.value = focusParent.firstElementChild.textContent.trim();
-					lastInput.classList.add('show');
-					lastInput.focus();
+					childElToFocus = focusParent.children[2];
+					childElToFocus.value = focusParent.firstElementChild.textContent.trim();
+					childElToFocus.classList.add('show');
+					childElToFocus.focus();
 				} else {
 					focusParent = todoList.firstElementChild.firstElementChild;
-					focusParent.children[2].value = focusParent.firstElementChild.textContent.trim();
-					focusParent.children[2].classList.add('show');
-					focusParent.children[2].focus();
-					console.log(focusParent, '    ', focusParent.children[2]);
+					childElToFocus = focusParent.children[2];
+					childElToFocus.value = focusParent.firstElementChild.textContent.trim();
+					childElToFocus.classList.add('show');
+					childElToFocus.focus();
 				}
 			}
 		},
@@ -215,9 +215,16 @@
 				index = this.getTodoIndex(this.todos, divID);
 
 				if (arr[index].nestedTodos.length) {
+
+					// unshift a todo
 					this.createTodo(arr[index].nestedTodos, index, topLevelParent, true);
 				} else {
-					this.createTodo(arr, index, topLevelParent);
+					if (!e.target.value && !arr[index + 1] && topLevelParent.nodeName !== 'MAIN') {
+						this.unnestTodo(e);
+					} else {
+						//push a todo
+						this.createTodo(arr, index, topLevelParent);
+					}
 				}
 			}
 		},
