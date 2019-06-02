@@ -78,64 +78,50 @@
 			if (!this.todos.length) {
 				this.createTodo();
 				todoList.innerHTML = this.todoTemplateMain({todos: this.todos});
-				childElToFocus = todoList.firstElementChild.firstElementChild;
-				childElToFocus.focus();
+				childElToFocus = this.getLastDivElement(todoList);
+				childElToFocus.children[2].classList.add('show');
+				childElToFocus.children[2].focus();
 			} else {
 				todoList.innerHTML = this.todoTemplateMain({todos: this.todos});
 
 				if (arguments.length) {
 					focusParent = document.getElementById(elementToFocusID);
 
-					// if (3 in focusParent.children) {
-					// 	childElToFocus = focusParent.children[3].lastElementChild;
-					// }
+					if (3 in focusParent.children) {
+						childElToFocus = focusParent.children[3].lastElementChild;
+					}
 					
-					childElToFocus = focusParent.firstElementChild;
+					childElToFocus = focusParent.children[2];
+					childElToFocus.value = focusParent.firstElementChild.textContent.trim();
+					childElToFocus.classList.add('show');
 					childElToFocus.focus();
 				} else {
 					focusParent = todoList.firstElementChild.firstElementChild;
-					childElToFocus = focusParent.firstElementChild;
+					childElToFocus = focusParent.children[2];
+					childElToFocus.value = focusParent.firstElementChild.textContent.trim();
+					childElToFocus.classList.add('show');
 					childElToFocus.focus();
 				}
 			}
-
-			this.focusElementEnd(childElToFocus);
-			console.log(this.todos);
 		},
 
 		/**
-		 * focusElementEnd() moves the caret from its current selection,
-		 * to the end of the range. Necessary to do when focusing on 
-		 * contenteditable <divs>
+		 * getLastDivElement() returns the last <div> inside a parent <li>.
+		 * If the <li> has nestedTodos, getLastDivElement() recurses until
+		 * it can return a <div>.
 		 *
-		 * @param {Element} el
+		 * @param {Element} ancestorEl
+		 * @return {Element} descendentEl
 		 */
-		focusElementEnd: function(el) {
-			// creates a Range object
-			var range = document.createRange();
+		getLastDivElement: function(ancestorEl) {
+			var descendentEl = ancestorEl.lastElementChild;
 
-			// returns a Selection object, representing current position of the caret
-			var sel = window.getSelection();
-
-			// selects the text node in el, and sets the Range to contain its contents
-	  		range.selectNodeContents(el);
-
-	  		// true collapses the range to its start, false to its end
-	        range.collapse(false);
-	        sel.removeAllRanges();
-	        sel.addRange(range);
+			if (descendentEl.type === 'text') {
+				return ancestorEl;
+			} else {
+				return this.getLastDivElement(descendentEl);
+			}
 		},
-
-		// this code will select and programatically highlight a range:
-		// focusElementEnd: function(el) {
-		// 	var range = document.createRange();
-		// 	var sel = window.getSelection();
-		// 	range.setStart(el.childNodes[0], 0);
-		// 	range.setEnd(el.childNodes[0], 26);
-		// 	sel.removeAllRanges();
-		// 	sel.addRange(range);
-		// },
-
 
 		/**
 		 * createEventListeners() adds event listeners on the <main> todo list
@@ -160,7 +146,7 @@
 		delegateEvents: function(e) {
 			if (e.target.classList[0] === 'text' && e.type === 'click') {
 				this.editTodo(e);
-			} else if (e.target.classList[0] === 'text' && e.type === 'keydown' && e.which === 9) {
+			} else if (e.target.nodeName === 'INPUT' && e.type === 'keydown' && e.which === 9) {
 				e.preventDefault();
 				/*
 			 	 * There is no keycode for Shift + Tab. Instead, there is a separate property on the event object, 
@@ -172,17 +158,17 @@
 				} else {
 					this.nestTodo(e);
 				}
-			} else if (e.target.classList[0] === 'text' && e.type === 'keyup' && !e.ctrlKey && !e.shiftKey) {
+			} else if (e.target.nodeName === 'INPUT' && e.type === 'keyup' && !e.ctrlKey && !e.shiftKey) {
 				this.editKeyUp(e);
-			} else if (e.target.classList[0] === 'text' && e.type === 'focusout') {
+			} else if (e.target.nodeName === 'INPUT' && e.type === 'focusout') {
 				this.unfocusTodo(e);
-			} else if (e.target.classList[0] === 'text' && e.type === 'keydown' && e.which === 13 && e.ctrlKey) {
+			} else if (e.target.nodeName === 'INPUT' && e.type === 'keydown' && e.which === 13 && e.ctrlKey) {
 				e.preventDefault();
 				this.completeTodo(e);
-			} else if (e.target.classList[0] === 'text' && e.target.textContent === '' && e.type === 'keydown' && e.which === 8) {
+			} else if (e.target.nodeName === 'INPUT' && e.target.value === '' && e.type === 'keydown' && e.which === 8) {
 				e.preventDefault();
 				this.destroyTodo(e);
-			} else if (e.target.classList[0] === 'text' && e.type === 'keydown' && e.which === 13 && e.shiftKey) {
+			} else if (e.target.nodeName === 'INPUT' && e.type === 'keydown' && e.which === 13 && e.shiftKey) {
 				e.preventDefault();
 				this.toggleNotesOn(e);
 			} else if (e.target.classList[0] === 'notes' && e.type === 'keydown' && e.which === 13 && e.shiftKey) {
@@ -206,9 +192,11 @@
 		 * @param {Event Object} e
 		 */
 		editTodo: function(e) {
-			var parentLI = e.target.parentElement;
-			var contentDiv = parentLI.firstElementChild;
-			contentDiv.focus();
+			var parentDiv = e.target.parentElement;
+			var inputFieldEl = parentDiv.children[2];
+			inputFieldEl.value = parentDiv.children[0].textContent.trim();
+			inputFieldEl.classList.add('show');
+			inputFieldEl.focus();
 		},
 
 		/**
@@ -218,16 +206,16 @@
 		 */
 		editKeyUp: function(e) {
 			var ENTER_KEY = 13;
-			var topLevelParent = e.target.parentElement;
-			var parentID = topLevelParent.id;
+			var topLevelParent = e.target.parentElement.parentElement.parentElement;
+			var divID 			 = e.target.parentElement.id;
 			var arr;
 			var index;
 
 			if (e.which !== ENTER_KEY) {
 				this.updateTodo(e);
 			} else {
-				arr = this.getArray(this.todos, parentID);
-				index = this.getTodoIndex(this.todos, parentID);
+				arr = this.getArray(this.todos, divID);
+				index = this.getTodoIndex(this.todos, divID);
 
 				if (arr[index].nestedTodos.length) {
 
@@ -235,8 +223,6 @@
 					this.createTodo(arr[index].nestedTodos, index, topLevelParent, true);
 				} else {
 					if (!e.target.value && !arr[index + 1] && topLevelParent.nodeName !== 'MAIN') {
-
-						// if a todo is blank and is not followed by a sibling, unnest one layer
 						this.unnestTodo(e);
 					} else {
 						//push a todo
@@ -252,11 +238,11 @@
 		 * @param {Event Object} e
 		 */
 		updateTodo: function(e) {
-			var divID = e.target.parentElement.id;
-			var contentDivText = e.target.textContent;
+			var divID 			 = e.target.parentElement.id;
+			var inputFieldText 	 = e.target.value;
 			var array = this.getArray(this.todos, divID);
 			var index = this.getTodoIndex(this.todos, divID);
-			array[index].text = contentDivText;
+			array[index].text = inputFieldText.trim();
 		},
 	 
 	 	/**
@@ -270,6 +256,7 @@
 	 	 * @param {Boolean} nesting - optional
 	 	 */
 		createTodo: function(todos, i, parent, nesting) {
+			var indexToAdd = i + 1; // you don't really need this, you can add i + 1
 			var todo = {
 				id: util.uuid(),
 				text: '',
@@ -284,11 +271,11 @@
 			} else if (!arguments.length) {
 				this.todos.push(todo);
 			} else if (arguments.length < 3 || parent.nodeName === 'MAIN') {
-				todos.splice(i + 1, 0, todo);
-				this.render(todos[i + 1].id);
+				todos.splice(indexToAdd, 0, todo);
+				this.render(todos[indexToAdd].id);
 			} else {
-				todos.splice(i + 1, 0, todo);
-				this.render(todos[i + 1].id);
+				todos.splice(indexToAdd, 0, todo);
+				this.render(todos[indexToAdd].id);
 			}
 
 			this.saveTodos();
@@ -302,10 +289,9 @@
 		 * @param {Event Object} e
 		 */
 		destroyTodo: function(e) {
-			var parentLI = e.target.parentElement; // the li
-			var parentID = parentLI.id;
-			var todoArray = this.getArray(this.todos, parentID);
-			var todoIndex = this.getTodoIndex(this.todos, parentID);
+			var div = e.target.parentElement;
+			var todoArray = this.getArray(this.todos, div.id);
+			var todoIndex = this.getTodoIndex(this.todos, div.id);
 			var divID;
 
 			if (todoArray[todoIndex].nestedTodos.length) {
@@ -314,13 +300,13 @@
 				todoArray.splice(todoIndex, 1);
 				
 				// ternary operators here maybe??
-				if (parentLI.previousElementSibling !== null) { // if the li has a prior sibling
-					divID = this.getLastNestedTodo(parentLI.previousElementSibling.id);
+				if (div.previousElementSibling !== null) {
+					divID = this.getLastNestedTodo(div.previousElementSibling.id);
 					this.render(divID);
-				} else if (parentLI.parentElement.parentElement.nodeName !== 'MAIN') {
-					this.render(parentLI.parentElement.parentElement.id); // the parent if it is nested
-				} else if (parentLI.nextElementSibling !== null) {
-					this.render(parentLI.nextElementSibling.id); // the following li
+				} else if (div.parentElement.parentElement.nodeName !== 'MAIN') {
+					this.render(div.parentElement.parentElement.id);
+				} else if (div.nextElementSibling !== null) {
+					this.render(div.nextElementSibling.id);
 				} else {
 					this.render();
 				}
@@ -360,7 +346,8 @@
 		 * @param {Event Object} e
 		 */
 		unfocusTodo: function(e) {
-			e.target.blur();
+			e.target.previousElementSibling.previousElementSibling.textContent = e.target.value.trim();
+			e.target.classList.remove('show');
 		},
 
 		/**
@@ -434,12 +421,12 @@
 		 * @param {Event Object} e
 		 */
 		completeTodo: function(e) {
-			var parentListItemID = e.target.parentElement.id;
-			var todoArray = this.getArray(this.todos, parentListItemID);
-			var todoIndex = this.getTodoIndex(this.todos, parentListItemID);
+			var currentDiv = e.target.parentElement;
+			var todoArray = this.getArray(this.todos, currentDiv.id);
+			var todoIndex = this.getTodoIndex(this.todos, currentDiv.id);
 			var todoStatus = todoArray[todoIndex].completed;
 			todoArray[todoIndex].completed = !todoStatus;
-			this.render(parentListItemID);
+			this.render(currentDiv.id);
 			this.saveTodos();
 		},
 
@@ -452,16 +439,16 @@
 		 * @param {Event Object} e
 		 */
 		toggleNotesOn: function(e) {
-			var parentListItemID = e.target.parentElement.id;
-			var array = this.getArray(this.todos, parentListItemID);
-			var index = this.getTodoIndex(this.todos, parentListItemID);
+			var parentDiv = e.target.parentElement;
+			var array = this.getArray(this.todos, parentDiv.id);
+			var index = this.getTodoIndex(this.todos, parentDiv.id);
 			var notesDiv;
 
 			// ternary operator here? blur will still need to be in its own conditional
-			if (e.type === 'keydown') { // keydown event
+			if (e.type === 'keydown') {
 				e.target.blur();
-				notesDiv = e.target.nextElementSibling;	
-			} else { // click event
+				notesDiv = e.target.previousElementSibling;	
+			} else {
 				notesDiv = e.target;
 			}
 			
@@ -478,9 +465,9 @@
 		 * @param {Event Object} e
 		 */
 		toggleNotesOff: function(e) {
-			var parentListItemID = e.target.parentElement.id;
-			var array = this.getArray(this.todos, parentListItemID);
-			var index = this.getTodoIndex(this.todos, parentListItemID);
+			var parentDiv = e.target.parentElement;
+			var array = this.getArray(this.todos, parentDiv.id);
+			var index = this.getTodoIndex(this.todos, parentDiv.id);
 			e.target.blur();
 			e.target.classList.remove('show-notes');
 			array[index].notes = e.target.innerHTML;
