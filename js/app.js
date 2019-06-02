@@ -182,9 +182,12 @@
 			} else if (e.target.classList[0] === 'text' && e.target.textContent === '' && e.type === 'keydown' && e.which === 8) {
 				e.preventDefault();
 				this.destroyTodo(e);
-			} else if (e.target.classList[0] === 'text' && e.type === 'keydown' && e.which === 13 && e.shiftKey) {
+			} else if (e.target.classList[0] === 'text' && e.type === 'keydown' && e.which === 13) {
 				e.preventDefault();
-				this.toggleNotesOn(e);
+
+				if (e.shiftKey) {
+					this.toggleNotesOn(e);
+				}
 			} else if (e.target.classList[0] === 'notes' && e.type === 'keydown' && e.which === 13 && e.shiftKey) {
 				e.preventDefault();
 				this.toggleNotesOff(e);
