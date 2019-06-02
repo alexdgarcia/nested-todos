@@ -172,8 +172,6 @@
 				} else {
 					this.nestTodo(e);
 				}
-			} else if (e.target.classList[0] === 'text' && e.type === 'keydown' && e.which === 13) {
-				e.preventDefault();
 			} else if (e.target.classList[0] === 'text' && e.type === 'keyup' && !e.ctrlKey && !e.shiftKey) {
 				this.editKeyUp(e);
 			} else if (e.target.classList[0] === 'text' && e.type === 'focusout') {
@@ -184,9 +182,12 @@
 			} else if (e.target.classList[0] === 'text' && e.target.textContent === '' && e.type === 'keydown' && e.which === 8) {
 				e.preventDefault();
 				this.destroyTodo(e);
-			} else if (e.target.classList[0] === 'text' && e.type === 'keydown' && e.which === 13 && e.shiftKey) {
+			} else if (e.target.classList[0] === 'text' && e.type === 'keydown' && e.which === 13) {
 				e.preventDefault();
-				this.toggleNotesOn(e);
+
+				if (e.shiftKey) {
+					this.toggleNotesOn(e);
+				}
 			} else if (e.target.classList[0] === 'notes' && e.type === 'keydown' && e.which === 13 && e.shiftKey) {
 				e.preventDefault();
 				this.toggleNotesOff(e);
@@ -236,7 +237,7 @@
 					// unshift a todo
 					this.createTodo(arr[index].nestedTodos, index, topLevelParent, true);
 				} else {
-					if (!e.target.textContent && !arr[index + 1] && topLevelParent.nodeName !== 'MAIN') {
+					if (!e.target.value && !arr[index + 1] && topLevelParent.nodeName !== 'MAIN') {
 
 						// if a todo is blank and is not followed by a sibling, unnest one layer
 						this.unnestTodo(e);
