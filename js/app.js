@@ -172,8 +172,6 @@
 				} else {
 					this.nestTodo(e);
 				}
-			} else if (e.target.classList[0] === 'text' && e.type === 'keydown' && e.which === 13) {
-				e.preventDefault();
 			} else if (e.target.classList[0] === 'text' && e.type === 'keyup' && !e.ctrlKey && !e.shiftKey) {
 				this.editKeyUp(e);
 			} else if (e.target.classList[0] === 'text' && e.type === 'focusout') {
@@ -236,7 +234,7 @@
 					// unshift a todo
 					this.createTodo(arr[index].nestedTodos, index, topLevelParent, true);
 				} else {
-					if (!e.target.textContent && !arr[index + 1] && topLevelParent.nodeName !== 'MAIN') {
+					if (!e.target.value && !arr[index + 1] && topLevelParent.nodeName !== 'MAIN') {
 
 						// if a todo is blank and is not followed by a sibling, unnest one layer
 						this.unnestTodo(e);
