@@ -192,6 +192,9 @@
 				this.toggleNotesOn(e);
 			} else if (e.target.classList[1] === 'show-notes' && e.type === 'focusout') {
 				this.toggleNotesOff(e);
+			} else if (e.target.classList[1] === 'show-notes' && e.target.textContent === '' && e.type === 'keydown' && e.which === 8) {
+				e.preventDefault();
+				this.toggleNotesOff(e);
 			}
 		},
 
@@ -480,8 +483,11 @@
 			var index = this.getTodoIndex(this.todos, parentListItemID);
 			e.target.blur();
 			e.target.classList.remove('show-notes');
-			e.target.classList.add('notes-preview');
 			array[index].notes = e.target.innerHTML;
+
+			if (e.target.textContent !== '') {
+				e.target.classList.add('notes-preview');
+			}
 
 			if (e.type === 'keydown') {
 				this.editTodo(e);
