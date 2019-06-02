@@ -172,6 +172,8 @@
 				} else {
 					this.nestTodo(e);
 				}
+			} else if (e.target.classList[0] === 'text' && e.type === 'keydown' && e.which === 13) {
+				e.preventDefault();
 			} else if (e.target.classList[0] === 'text' && e.type === 'keyup' && !e.ctrlKey && !e.shiftKey) {
 				this.editKeyUp(e);
 			} else if (e.target.classList[0] === 'text' && e.type === 'focusout') {
@@ -191,6 +193,9 @@
 			} else if (e.target.classList[0] === 'notes' && e.type === 'click') {
 				this.toggleNotesOn(e);
 			} else if (e.target.classList[1] === 'show-notes' && e.type === 'focusout') {
+				this.toggleNotesOff(e);
+			} else if (e.target.classList[1] === 'show-notes' && e.target.textContent === '' && e.type === 'keydown' && e.which === 8) {
+				e.preventDefault();
 				this.toggleNotesOff(e);
 			}
 		},
@@ -231,7 +236,7 @@
 					// unshift a todo
 					this.createTodo(arr[index].nestedTodos, index, topLevelParent, true);
 				} else {
-					if (!e.target.value && !arr[index + 1] && topLevelParent.nodeName !== 'MAIN') {
+					if (!e.target.textContent && !arr[index + 1] && topLevelParent.nodeName !== 'MAIN') {
 
 						// if a todo is blank and is not followed by a sibling, unnest one layer
 						this.unnestTodo(e);
@@ -480,8 +485,11 @@
 			var index = this.getTodoIndex(this.todos, parentListItemID);
 			e.target.blur();
 			e.target.classList.remove('show-notes');
-			e.target.classList.add('notes-preview');
 			array[index].notes = e.target.innerHTML;
+
+			if (e.target.textContent !== '') {
+				e.target.classList.add('notes-preview');
+			}
 
 			if (e.type === 'keydown') {
 				this.editTodo(e);
