@@ -238,7 +238,7 @@
 					// unshift a todo
 					this.createTodo(arr[index].nestedTodos, index, topLevelParent, true);
 				} else {
-					if (!e.target.value && !arr[index + 1] && topLevelParent.nodeName !== 'MAIN') {
+					if (!e.target.textContent && !arr[index + 1] && topLevelParent.nodeName !== 'MAIN') {
 
 						// if a todo is blank and is not followed by a sibling, unnest one layer
 						this.unnestTodo(e);
