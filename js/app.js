@@ -176,7 +176,7 @@
 				this.editKeyUp(e);
 			} else if (e.target.classList[0] === 'text' && e.type === 'focusout') {
 				this.unfocusTodo(e);
-			} else if (e.target.classList[0] === 'text' && e.type === 'keydown' && e.which === 13 && e.ctrlKey) {
+			} else if ((e.target.classList[0] === 'text' || e.target.classList[0] === 'notes') && e.type === 'keydown' && e.which === 13 && e.ctrlKey) {
 				e.preventDefault();
 				this.completeTodo(e);
 			} else if (e.target.classList[0] === 'text' && e.target.textContent === '' && e.type === 'keydown' && e.which === 8) {
@@ -212,6 +212,7 @@
 			var parentLI = e.target.parentElement;
 			var contentDiv = parentLI.firstElementChild;
 			contentDiv.focus();
+			this.focusElementEnd(contentDiv);
 		},
 
 		/**
@@ -441,8 +442,16 @@
 			var todoArray = this.getArray(this.todos, parentListItemID);
 			var todoIndex = this.getTodoIndex(this.todos, parentListItemID);
 			var todoStatus = todoArray[todoIndex].completed;
+			var elementToRenderID;
 			todoArray[todoIndex].completed = !todoStatus;
-			this.render(parentListItemID);
+
+			if (todoArray[todoIndex].completed && e.target.classList[0] === 'notes') {
+				elementToRenderID = e.target.parentElement.nextElementSibling.id;
+			} else {
+				elementToRenderID = parentListItemID;
+			}
+
+			this.render(elementToRenderID);
 			this.saveTodos();
 		},
 

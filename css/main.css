@@ -91,11 +91,11 @@ input:focus {
 	color: grey;
 }
 
-.completed input {
+.completed div {
 	color: grey;
 }
 
-.completed > div, .completed > input {
+.completed > div:first-child {
 	text-decoration: line-through;
 }
 
