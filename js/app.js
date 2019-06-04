@@ -85,11 +85,6 @@
 
 				if (arguments.length) {
 					focusParent = document.getElementById(elementToFocusID);
-
-					// if (3 in focusParent.children) {
-					// 	childElToFocus = focusParent.children[3].lastElementChild;
-					// }
-					
 					childElToFocus = focusParent.firstElementChild;
 					childElToFocus.focus();
 				} else {
@@ -216,7 +211,8 @@
 		},
 
 		/**
-		 * editKeyUp() is invoked when keyup events occur in an <input> element.
+		 * editKeyUp() is invoked when keyup events occur in <div> elements with a 
+		 * class of 'text'.
 		 *
 		 * @param {Event Object} e
 		 */
@@ -251,7 +247,7 @@
 		},
 
 		/**
-		 * updateTodo() is invoked when the value of an <input> element is changed.
+		 * updateTodo() is invoked when the value of an <div> element is changed.
 		 *
 		 * @param {Event Object} e
 		 */
@@ -316,6 +312,7 @@
 				return;
 			} else {
 				todoArray.splice(todoIndex, 1);
+				this.saveTodos();
 				
 				// ternary operators here maybe??
 				if (parentLI.previousElementSibling !== null) { // if the li has a prior sibling
@@ -328,8 +325,6 @@
 				} else {
 					this.render();
 				}
-
-				this.saveTodos();
 			}
 		},
 
@@ -389,8 +384,8 @@
 				siblingIndex = this.getTodoIndex(this.todos, previousSibling.id);
 				siblingArray[siblingIndex].nestedTodos.push(todoArray[todoIndex]);
 				todoArray.splice(todoIndex, 1);
-				this.render(parentLi.id);
 				this.saveTodos();
+				this.render(parentLi.id);
 			}
 		},
 
@@ -418,22 +413,22 @@
 				var parentIndex = this.getTodoIndex(this.todos, futureParent.id);
 				parentArray[parentIndex].nestedTodos.splice(previousParentIndex + 1, 0, todoArray[todoIndex]);
 				todoArray.splice(todoIndex, 1);
-				this.render(currentLI.id);
 			} else if (futureParent.nodeName === 'MAIN') {
 				var currentParent = currentLI.parentElement.parentElement;
 				var parentIndex = this.getTodoIndex(this.todos, currentParent.id);
 				this.todos.splice(parentIndex + 1, 0, todoArray[todoIndex]);
 				todoArray.splice(todoIndex, 1);
-				this.render(currentLI.id);
 			}
 
 			this.saveTodos();
+			this.render(currentLI.id);
 		},
 
 		/**
-		 * completeTodo() is invoked when an ENTER keydown event occurs on an <input>
-		 * element while CTRL key is being held. This method updateTodos the current .completed 
-		 * property value of that todo object to its inverse.
+		 * completeTodo() is invoked when an ENTER keydown event occurs on a <div>
+		 * element with a class of 'text' while CTRL key is being held. This method 
+		 * updates the current .completed property value of that todo object to its 
+		 * inverse.
 		 *
 		 * @param {Event Object} e
 		 */
@@ -451,15 +446,15 @@
 				elementToRenderID = parentListItemID;
 			}
 
-			this.render(elementToRenderID);
 			this.saveTodos();
+			this.render(elementToRenderID);
 		},
 
 		/**
-		 * toggleNotesOn() is invoked when an ENTER keydown event occurs on an <input>
-		 * element while the SHIFT key is being held. This method will toggle the <div>
-		 * element with a class of 'notes', allowing a user to type additional
-		 * information about a given todo.
+		 * toggleNotesOn() is invoked when an ENTER keydown event occurs on a <div>
+		 * element with a class of 'text' while the SHIFT key is being held. This 
+		 * method will toggle the <div> element with a class of 'notes', allowing a 
+		 * user to type additional information about a given todo.
 		 *
 		 * @param {Event Object} e
 		 */
