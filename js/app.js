@@ -68,9 +68,9 @@
 		 * render() controls how the application is to be rendered 
 		 * and the elements that receive focus at that time.
 		 *
-		 * @param {String} elementToFocusID
+		 * @param {String} elementToFocus
 		 */
-		render: function(elementToFocusID) {
+		render: function(elementToFocus) {
 			var todoList = document.querySelector('#todo-list');
 			var focusParent;
 			var childElToFocus;
@@ -78,15 +78,21 @@
 			if (!this.todos.length) {
 				this.createTodo();
 				todoList.innerHTML = this.todoTemplateMain({todos: this.todos});
-				childElToFocus = todoList.firstElementChild.firstElementChild;
+				childElToFocus = document.querySelector('div');
 				childElToFocus.focus();
 			} else {
 				todoList.innerHTML = this.todoTemplateMain({todos: this.todos});
 
 				if (arguments.length) {
-					focusParent = document.getElementById(elementToFocusID);
-					childElToFocus = focusParent.firstElementChild;
-					childElToFocus.focus();
+					if (typeof elementToFocus === 'object') {
+						focusParent = elementToFocus.parentElement;
+						childElToFocus = document.getElementById(focusParent.id).children[1];
+						this.toggleNotesOn(childElToFocus);
+					} else {
+						focusParent = document.getElementById(elementToFocus);
+						childElToFocus = focusParent.firstElementChild;
+						childElToFocus.focus();
+					}
 				} else {
 					focusParent = todoList.firstElementChild.firstElementChild;
 					childElToFocus = focusParent.firstElementChild;
@@ -171,9 +177,12 @@
 				this.editKeyUp(e);
 			} else if (e.target.classList[0] === 'text' && e.type === 'focusout') {
 				this.unfocusTodo(e);
-			} else if ((e.target.classList[0] === 'text' || e.target.classList[0] === 'notes') && e.type === 'keydown' && e.which === 13 && e.ctrlKey) {
+			} else if (e.target.classList[0] === 'text' && e.type === 'keydown' && e.which === 13 && e.ctrlKey) {
 				e.preventDefault();
-				this.completeTodo(e);
+				this.setCompleteTodoDiv(e);
+			} else if (e.target.classList[0] === 'notes' && e.type === 'keydown' && e.which === 13 && e.ctrlKey) {
+				e.preventDefault();
+				this.setCompleteTodoNotes(e);
 			} else if (e.target.classList[0] === 'text' && e.target.textContent === '' && e.type === 'keydown' && e.which === 8) {
 				e.preventDefault();
 				this.destroyTodo(e);
@@ -425,29 +434,51 @@
 		},
 
 		/**
-		 * completeTodo() is invoked when an ENTER keydown event occurs on a <div>
+		 * setCompleteTodoDiv() is invoked when an ENTER keydown event occurs on a <div>
 		 * element with a class of 'text' while CTRL key is being held. This method 
 		 * updates the current .completed property value of that todo object to its 
 		 * inverse.
 		 *
 		 * @param {Event Object} e
 		 */
-		completeTodo: function(e) {
+		setCompleteTodoDiv: function(e) {
 			var parentListItemID = e.target.parentElement.id;
 			var todoArray = this.getArray(this.todos, parentListItemID);
 			var todoIndex = this.getTodoIndex(this.todos, parentListItemID);
 			var todoStatus = todoArray[todoIndex].completed;
-			var elementToRenderID;
+			todoArray[todoIndex].completed = !todoStatus;
+			this.saveTodos();
+			this.render(parentListItemID);
+		},
+
+		/**
+		 * 
+		 */
+		setCompleteTodoNotes: function(e) {
+			var parentLI = e.target.parentElement;
+			var todoArray = this.getArray(this.todos, parentLI.id);
+			var todoIndex = this.getTodoIndex(this.todos, parentLI.id);
+			var todoStatus = todoArray[todoIndex].completed;
+			var elementToRender;
 			todoArray[todoIndex].completed = !todoStatus;
 
-			if (todoArray[todoIndex].completed && e.target.classList[0] === 'notes') {
-				elementToRenderID = e.target.parentElement.nextElementSibling.id;
+			if (!todoArray[todoIndex].completed) {
+				elementToRender = e.target;
+			} else if (todoArray[todoIndex].completed && parentLI.nextElementSibling) {
+				elementToRender = parentLI.nextElementSibling.id;
+			} else if (todoArray[todoIndex].completed && parentLI.previousElementSibling) {
+				todoArray = this.getArray(this.todos, parentLI.previousElementSibling.id);
+				todoIndex = this.getTodoIndex(this.todos, parentLI.previousElementSibling.id);
+				elementToRender = this.getLastNestedTodo(parentLI.previousElementSibling.id);
+			} else if (todoArray[todoIndex].completed && 
+				parentLI.parentElement.parentElement.nodeName === 'LI') {
+				elementToRender = parentLI.parentElement.parentElement.id;
 			} else {
-				elementToRenderID = parentListItemID;
+				elementToRender = parentLI.id
 			}
 
 			this.saveTodos();
-			this.render(elementToRenderID);
+			this.render(elementToRender);
 		},
 
 		/**
@@ -459,9 +490,6 @@
 		 * @param {Event Object} e
 		 */
 		toggleNotesOn: function(e) {
-			var parentListItemID = e.target.parentElement.id;
-			var array = this.getArray(this.todos, parentListItemID);
-			var index = this.getTodoIndex(this.todos, parentListItemID);
 			var notesDiv;
 
 			// ternary operator here? blur will still need to be in its own conditional
@@ -469,12 +497,13 @@
 				e.target.blur();
 				notesDiv = e.target.nextElementSibling;	
 			} else { // click event
-				notesDiv = e.target;
+				notesDiv = e.target || e;
 			}
 			
 			notesDiv.classList.remove('notes-preview');
 			notesDiv.classList.add('show-notes');
 			notesDiv.focus();
+			this.focusElementEnd(notesDiv);
 		},
 
 		/**
