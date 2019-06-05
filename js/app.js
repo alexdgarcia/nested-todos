@@ -101,7 +101,6 @@
 			}
 
 			this.focusElementEnd(childElToFocus);
-			console.log(this.todos);
 		},
 
 		/**
