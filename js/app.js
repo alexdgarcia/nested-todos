@@ -266,6 +266,7 @@
 			var array = this.getArray(this.todos, divID);
 			var index = this.getTodoIndex(this.todos, divID);
 			array[index].text = contentDivText;
+			this.saveTodos();
 		},
 	 
 	 	/**
@@ -442,13 +443,30 @@
 		 * @param {Event Object} e
 		 */
 		setCompleteTodoDiv: function(e) {
-			var parentListItemID = e.target.parentElement.id;
-			var todoArray = this.getArray(this.todos, parentListItemID);
-			var todoIndex = this.getTodoIndex(this.todos, parentListItemID);
+			var parentListItem = e.target.parentElement;
+			var todoArray = this.getArray(this.todos, parentListItem.id);
+			var todoIndex = this.getTodoIndex(this.todos, parentListItem.id);
 			var todoStatus = todoArray[todoIndex].completed;
+			var elementToRender;
 			todoArray[todoIndex].completed = !todoStatus;
+
+			if (!todoArray[todoIndex].completed) {
+				elementToRender = parentListItem.id;
+			} else if (todoArray[todoIndex].completed && parentListItem.nextElementSibling) {
+				elementToRender = parentListItem.nextElementSibling.id;
+			} else if (todoArray[todoIndex].completed && parentListItem.previousElementSibling) {
+				todoArray = this.getArray(this.todos, parentListItem.previousElementSibling.id);
+				todoIndex = this.getTodoIndex(this.todos, parentListItem.previousElementSibling.id);
+				elementToRender = this.getLastNestedTodo(parentListItem.previousElementSibling.id);
+			} else if (todoArray[todoIndex].completed && 
+				parentListItem.parentElement.parentElement.nodeName === 'LI') {
+				elementToRender = parentListItem.parentElement.parentElement.id;
+			} else {
+				elementToRender = parentListItem.id
+			}
+
 			this.saveTodos();
-			this.render(parentListItemID);
+			this.render(elementToRender);
 		},
 
 		/**
