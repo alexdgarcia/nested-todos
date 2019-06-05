@@ -438,7 +438,7 @@
 		 * setCompleteTodoDiv() is invoked when an ENTER keydown event occurs on a <div>
 		 * element with a class of 'text' while CTRL key is being held. This method 
 		 * updates the current .completed property value of that todo object to its 
-		 * inverse.
+		 * inverse. This function then determines what element should receive focus next.
 		 *
 		 * @param {Event Object} e
 		 */
@@ -470,7 +470,12 @@
 		},
 
 		/**
+		 * setCompleteTodoNotes() is invoked when an ENTER keydown event occurs on a <div>
+		 * with a class of 'notes' while CTRL key is being held. This method updates the
+		 * current .completed property value of that todo object to its inverse. This
+		 * function then determines what element should receive focus next.
 		 * 
+		 * @param {Event Object} e
 		 */
 		setCompleteTodoNotes: function(e) {
 			var parentLI = e.target.parentElement;
