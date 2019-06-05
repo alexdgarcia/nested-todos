@@ -470,6 +470,11 @@
 				todoArray = this.getArray(this.todos, parentLI.previousElementSibling.id);
 				todoIndex = this.getTodoIndex(this.todos, parentLI.previousElementSibling.id);
 				elementToRender = this.getLastNestedTodo(parentLI.previousElementSibling.id);
+			} else if (todoArray[todoIndex].completed && 
+				parentLI.parentElement.parentElement.nodeName === 'LI') {
+				elementToRender = parentLI.parentElement.parentElement.id;
+			} else {
+				elementToRender = parentLI.id
 			}
 
 			this.saveTodos();
@@ -498,6 +503,7 @@
 			notesDiv.classList.remove('notes-preview');
 			notesDiv.classList.add('show-notes');
 			notesDiv.focus();
+			this.focusElementEnd(notesDiv);
 		},
 
 		/**
