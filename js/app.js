@@ -228,6 +228,7 @@
 			var ENTER_KEY = 13;
 			var topLevelParent = e.target.parentElement;
 			var parentID = topLevelParent.id;
+			var todoList = document.querySelector('main');
 			var arr;
 			var index;
 
@@ -242,7 +243,7 @@
 					// unshift a todo
 					this.createTodo(arr[index].nestedTodos, index, topLevelParent, true);
 				} else {
-					if (!e.target.textContent && !arr[index + 1] && topLevelParent.nodeName !== 'MAIN') {
+					if (!e.target.textContent && !arr[index + 1] && topLevelParent.parentElement.parentElement !== todoList) {
 
 						// if a todo is blank and is not followed by a sibling, unnest one layer
 						this.unnestTodo(e);
